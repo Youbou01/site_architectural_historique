@@ -2,6 +2,7 @@ export interface Commentaire {
   id: string;
   nom: string;
   message: string;
-  date: Date;
+  date: string; //will convert it later
   note?: number;
+  etat: string; //ex: "approved" | "pending" pour modération coté back office later
 }

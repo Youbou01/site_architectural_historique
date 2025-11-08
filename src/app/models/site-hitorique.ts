@@ -1,5 +1,6 @@
 import { Commentaire } from './commentaire';
 import { LieuProche } from './lieu-proche';
+import { Stats } from './stats';
 
 export interface SiteHistorique {
   id: string;
@@ -19,4 +20,5 @@ export interface SiteHistorique {
   lieuxProches: LieuProche[];
   comments: Commentaire[];
   monuments: SiteHistorique[];
+  stats?:Stats;
 }

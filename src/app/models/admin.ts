@@ -3,5 +3,5 @@ export interface Admin {
   username: string;
   passwordHash: string;
   role: 'admin' | 'editor';
-  dernierLogin?: Date;
+  dernierLogin?: Date|string;
 }
