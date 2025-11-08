@@ -5,7 +5,8 @@ import { Stats } from './stats';
 export interface SiteHistorique {
   id: string;
   nom: string;
-  localisation: string;
+  localisation?: string;
+  adresse?:string;
   description: string;
   photoCarousel: string[]; //make link in images(clicked) that correspond to monuments
   latitude: number;
