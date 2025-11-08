@@ -1,5 +1,5 @@
-import { Commentaire } from "./commentaire";
-import { LieuProche } from "./lieu-proche";
+import { Commentaire } from './commentaire';
+import { LieuProche } from './lieu-proche';
 
 export interface SiteHistorique {
   id: string;
@@ -13,21 +13,10 @@ export interface SiteHistorique {
   dateConstruction: Date;
   estClasse: boolean;
   prixEntree: number;
-  ouvert:boolean;
+  ouvert: boolean;
   horaires: string[];
   visitesGuideesDisponibles: boolean;
   lieuxProches: LieuProche[];
   comments: Commentaire[];
-  monuments:SiteHistorique[];
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
+  monuments: SiteHistorique[];
 }
