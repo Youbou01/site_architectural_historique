@@ -11,7 +11,7 @@ export interface SiteHistorique {
   latitude: number;
   longitude: number;
   categories: string[];
-  dateConstruction: Date;
+  dateConstruction: string|null;
   estClasse: boolean;
   prixEntree: number;
   ouvert: boolean;
