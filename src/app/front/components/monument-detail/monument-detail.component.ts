@@ -1,9 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { PatrimoineService } from '../../../services/patrimoine.service';
 import { SiteHistorique } from '../../../models/site-historique';
-import { switchMap, map } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
+import { map, switchMap, tap, catchError } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-monument-detail',
@@ -16,47 +18,65 @@ export class MonumentDetailComponent {
   private route = inject(ActivatedRoute);
   private service = inject(PatrimoineService);
 
-  monument?: SiteHistorique;
-  loading = true;
-  error: string | null = null;
+  loading = signal(true);
+  error = signal<string | null>(null);
+  monument = signal<SiteHistorique | null>(null);
 
   constructor() {
-    const patrimoineId = this.route.snapshot.paramMap.get('patrimoineId')!;
-    const monumentId = this.route.snapshot.paramMap.get('monumentId')!;
+    const parent = this.route.parent ?? this.route;
 
-    // Optimistic render: use currentPatrimoine (detailed data from parent) first
-    const currentPatrimoine = this.service.currentPatrimoine();
-    if (currentPatrimoine && currentPatrimoine.id === patrimoineId) {
-      const cachedMonument = currentPatrimoine.monuments.find((m) => m.id === monumentId);
-      if (cachedMonument) {
-        this.monument = cachedMonument;
-        this.loading = false;
-        return; // Skip server fetch since we have fresh data
-      }
-    }
-
-    // Fallback: fetch from server (for direct URL navigation)
-    this.route.paramMap
+    combineLatest([parent.paramMap, this.route.paramMap])
       .pipe(
-        switchMap((params) => this.service.getById(params.get('patrimoineId')!)),
-        map((p) => {
-          const monId = this.route.snapshot.paramMap.get('monumentId');
-          return p.monuments.find((m) => m.id === monId);
-        })
-      )
-      .subscribe({
-        next: (m) => {
-          if (!m) {
-            this.error = 'Monument introuvable';
+        tap(() => {
+          this.loading.set(true);
+          this.error.set(null);
+          this.monument.set(null);
+        }),
+        map(([pp, cp]) => {
+          const patrimoineId =
+            pp.get('patrimoineId') ??
+            pp.get('id') ??
+            this.route.snapshot.paramMap.get('patrimoineId') ??
+            this.route.snapshot.paramMap.get('id');
+
+          const monumentId =
+            cp.get('monumentId') ??
+            cp.get('id');
+
+          return { patrimoineId, monumentId };
+        }),
+        switchMap(({ patrimoineId, monumentId }) => {
+          if (!patrimoineId || !monumentId) {
+            this.error.set('Paramètres de route invalides.');
+            return of<SiteHistorique | null>(null);
           }
-          this.monument = m;
-          this.loading = false;
-        },
-        error: (err) => {
+
+          // Fast path: use cached detailed patrimoine from parent when available
+          const current = this.service.currentPatrimoine();
+          if (current && current.id === patrimoineId) {
+            const found = current.monuments.find((m) => m.id === monumentId) ?? null;
+            return of(found);
+          }
+
+          // Fallback: fetch patrimoine, then find monument
+          return this.service.getById(patrimoineId).pipe(
+            map((p) => p.monuments.find((m) => m.id === monumentId) ?? null)
+          );
+        }),
+        catchError((err) => {
           console.error(err);
-          this.error = 'Erreur de chargement';
-          this.loading = false;
-        },
-      });
+          this.error.set('Erreur de chargement.');
+          return of(null);
+        }),
+        tap((m) => {
+          if (!m && !this.error()) {
+            this.error.set('Monument introuvable');
+          }
+          this.monument.set(m);
+          this.loading.set(false);
+        }),
+        takeUntilDestroyed()
+      )
+      .subscribe();
   }
 }

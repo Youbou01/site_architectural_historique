@@ -1,26 +1,32 @@
-<div class="monument-detail" *ngIf="!loading && !error && monument">
-  <h3>{{ monument!.nom }}</h3>
-  <div class="gallery">
-    @for (img of monument!.photoCarousel; track img) { <img [src]="img" [alt]="monument!.nom" /> }
-  </div>
-  <p>{{ monument!.description }}</p>
-  <ul class="info">
-    <li><strong>Prix:</strong> {{ monument!.prixEntree }} DT</li>
-    <li><strong>Ouvert:</strong> {{ monument!.ouvert ? 'Oui' : 'Non' }}</li>
-    <li><strong>Catégories:</strong> {{ monument!.categories.join(', ') }}</li>
-  </ul>
-  <h4>Commentaires</h4>
-  <ul class="comments">
-    @for (c of monument!.comments; track c.id) {
-    <li>
-      <strong>{{ c.nom }}</strong> <span class="date">{{ c.date }}</span>
-      <p>{{ c.message }}</p>
-    </li>
+<section class="monument-detail">
+  @if (loading()) {
+    <div class="loading">
+      <span>Chargement…</span>
+    </div>
+  } @else {
+    @if (error()) {
+      <div class="error">
+        {{ error() }}
+      </div>
+    } @else {
+      @if (monument()) {
+        <article class="content">
+          <h2>{{ monument()!.nom }}</h2>
+
+          @if (monument()!.photoCarousel?.length) {
+            <img
+              [src]="monument()!.photoCarousel[0]"
+              [alt]="monument()!.nom"
+            />
+          }
+
+          @if (monument()!.description) {
+            <p>{{ monument()!.description }}</p>
+          }
+        </article>
+      } @else {
+        <div class="empty">Aucun détail disponible.</div>
+      }
     }
-  </ul>
-</div>
-@if (loading) {
-<div class="loading">Chargement du monument…</div>
-} @if (error) {
-<div class="error">{{ error }}</div>
-}
+  }
+</section>

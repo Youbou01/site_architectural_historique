@@ -11,7 +11,7 @@ import { PatrimoineCardComponent } from '../patrimoine-card/patrimoine-card.comp
   styleUrls: ['./patrimoine-list.component.css'],
 })
 export class PatrimoineListComponent implements OnInit {
-  private service = inject(PatrimoineService);
+  private service :PatrimoineService= inject(PatrimoineService);
 
   patrimoines = computed(() => this.service.patrimoines());
   loading = computed(() => this.service.loading());
