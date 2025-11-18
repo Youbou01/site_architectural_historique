@@ -1,14 +1,10 @@
 <section class="monument-detail" [@pageFade]>
   @if (parentId()) {
-  <a class="back" [routerLink]="['/patrimoines', parentId()!]">← Retour à la place</a>
-  } @if (loading()) {
-  <div class="loading">
-    <span>Chargement…</span>
-  </div>
+  <a class="back" [routerLink]="['/patrimoines', parentId()!]">← Retour à la place</a> } @if
+  (loading()) {
+  <div class="loading"><span>Chargement…</span></div>
   } @else { @if (error()) {
-  <div class="error">
-    {{ error() }}
-  </div>
+  <div class="error">{{ error() }}</div>
   } @else { @if (monument()) {
   <article class="content">
     <h2>{{ monument()!.nom }}</h2>
@@ -18,6 +14,61 @@
     } @if (monument()!.description) {
     <p>{{ monument()!.description }}</p>
     }
+
+    <div class="info">
+      <div><strong>Ouvert:</strong> {{ monument()!.ouvert ? 'Oui' : 'Non' }}</div>
+      <div><strong>Prix:</strong> {{ monument()!.prixEntree }} DT</div>
+      <div><strong>Classé:</strong> {{ monument()!.estClasse ? 'Oui' : 'Non' }}</div>
+      <div>
+        <strong>Guides:</strong> {{ monument()!.visitesGuideesDisponibles ? 'Oui' : 'Non' }}
+      </div>
+      <div><strong>Date:</strong> {{ monument()!.dateConstruction || '—' }}</div>
+      <div><strong>Catégories:</strong> {{ monument()!.categories.join(', ') }}</div>
+    </div>
+
+    <div class="panel">
+      <h3>Commentaires</h3>
+      @if (monument()!.comments.length) {
+      <ul class="comments">
+        @for (c of monument()!.comments; track c.id) {
+        <li>
+          <div class="d-flex justify-content-between">
+            <strong>{{ c.nom }}</strong>
+            <span class="date">{{ c.date }}</span>
+          </div>
+          @if (c.note) {
+          <div class="note">Note: {{ c.note }} / 5</div>
+          }
+          <div>{{ c.message }}</div>
+        </li>
+        }
+      </ul>
+      } @else {
+      <div class="muted">Aucun commentaire.</div>
+      }
+    </div>
+
+    <div class="panel">
+      <h3>Localisation</h3>
+      @if (monument()!.latitude && monument()!.longitude) {
+      <div class="map-frame">
+        <iframe
+          title="Carte"
+          [src]="
+            'https://www.google.com/maps?q=' +
+              monument()!.latitude +
+              ',' +
+              monument()!.longitude +
+              '&hl=fr&z=14&output=embed' | safeUrl
+          "
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      } @else {
+      <div class="muted">Coordonnées indisponibles.</div>
+      }
+    </div>
   </article>
   } @else {
   <div class="empty">Aucun détail disponible.</div>

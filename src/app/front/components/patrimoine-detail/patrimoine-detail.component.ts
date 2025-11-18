@@ -6,11 +6,12 @@ import { SiteHistorique } from '../../../models/site-historique';
 import { switchMap } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CarouselComponent } from '../ui/carousel/carousel.component';
+import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
 
 @Component({
   selector: 'app-patrimoine-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, CarouselComponent],
+  imports: [CommonModule, RouterLink, CarouselComponent, SafeUrlPipe],
   animations: [
     trigger('pageFade', [
       transition(':enter', [

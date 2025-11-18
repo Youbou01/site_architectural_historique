@@ -8,11 +8,12 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CarouselComponent } from '../ui/carousel/carousel.component';
+import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
 
 @Component({
   selector: 'app-monument-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, CarouselComponent],
+  imports: [CommonModule, RouterLink, CarouselComponent, SafeUrlPipe],
   animations: [
     trigger('pageFade', [
       transition(':enter', [

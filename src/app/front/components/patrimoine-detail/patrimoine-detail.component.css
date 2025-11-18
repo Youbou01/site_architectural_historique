@@ -68,6 +68,41 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
+.stats-grid {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.comments {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.comments li {
+  background: #0b1220;
+  border: 1px solid #14213a;
+  border-radius: 10px;
+  padding: 10px;
+}
+.map-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #14213a;
+}
+.map-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 .monuments {
   margin-top: 28px;
 }
