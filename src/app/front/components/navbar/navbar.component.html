@@ -19,8 +19,11 @@
     </ul>
     <div class="actions">
       <button type="button" class="ghost" (click)="toggleTheme()" [attr.aria-label]="'Basculer thème ' + theme()">
-        <svg viewBox="0 0 24 24" *ngIf="theme() === 'dark'"><path fill="currentColor" d="M12 3a9 9 0 0 0 0 18 9 9 0 0 0 0-18Zm0 2a7 7 0 0 1 0 14 7 7 0 0 1 0-14Z"/></svg>
-        <svg viewBox="0 0 24 24" *ngIf="theme() === 'light'"><path fill="currentColor" d="M6.995 12a5 5 0 0 1 4.47-4.966 7 7 0 1 0 6.504 6.504A5 5 0 0 1 6.995 12Z"/></svg>
+        @if (theme() === 'dark') {
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 0 0 0 18 9 9 0 0 0 0-18Zm0 2a7 7 0 0 1 0 14 7 7 0 0 1 0-14Z"/></svg>
+        } @else {
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M6.995 12a5 5 0 0 1 4.47-4.966 7 7 0 1 0 6.504 6.504A5 5 0 0 1 6.995 12Z"/></svg>
+        }
       </button>
       <button class="ghost disabled" title="À venir">Favoris</button>
       <button class="ghost disabled" title="À venir">Admin</button>
