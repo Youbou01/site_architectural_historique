@@ -26,4 +26,5 @@ export class NavbarComponent {
   isActive(path: string) {
     return this.router.url.startsWith(path);
   }
+  
 }
