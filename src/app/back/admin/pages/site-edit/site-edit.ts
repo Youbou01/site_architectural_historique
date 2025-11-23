@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Site } from '../../../../core/services/site';
-import { SiteH } from '../../../../code/models/siteH.model';
+import { PatrimoineService } from '../../../../services/patrimoine.service';
+import { SiteHistorique } from '../../../../models/site-historique';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -31,7 +31,7 @@ export class SiteEditComponent implements OnInit {
   };
 
   constructor(
-    private siteService: Site,
+    private patrimoineService: PatrimoineService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -45,17 +45,17 @@ export class SiteEditComponent implements OnInit {
   }
 
   loadSite(id: string) {
-    this.siteService.getSite(id).subscribe({
-      next: (site) => {
+    this.patrimoineService.getById(id).subscribe({
+      next: (site: SiteHistorique) => {
         this.formData = {
           nom: site.nom || '',
           localisation: site.localisation || '',
-          photo: site.photo || '',
+          photo: site.photoCarousel?.[0] || '',
           dateConstruction: site.dateConstruction ? site.dateConstruction.split('T')[0] : '',
           estClasse: site.estClasse || false,
           prixEntree: site.prixEntree || 0,
           description: site.description || '',
-          categorie: site.categorie || 'Autre',
+          categorie: site.categories?.[0] || 'Autre',
           horaires: (site.horaires || []).join(', '),
           visitesGuideesDisponibles: site.visitesGuideesDisponibles || false,
           lieuxProches: (site.lieuxProches || []).map(l => `${l.nom}|${l.type}|${l.distanceKm || 0}`).join('; '),
@@ -63,7 +63,7 @@ export class SiteEditComponent implements OnInit {
           longitude: site.longitude || 0
         };
       },
-      error: (err) => {
+      error: (err: Error) => {
         alert('Error loading site: ' + err.message);
         this.router.navigate(['/admin/site-crud']);
       }
@@ -76,80 +76,8 @@ export class SiteEditComponent implements OnInit {
       return false;
     }
 
-    const horaires = this.formData.horaires
-      .split(',')
-      .map(h => h.trim())
-      .filter(h => h);
-
-    const lieuxProches = this.formData.lieuxProches
-      .split(';')
-      .map(l => {
-        const parts = l.trim().split('|');
-        return {
-          nom: parts[0] || '',
-          type: parts[1] || '',
-          distanceKm: parseFloat(parts[2]) || 0
-        };
-      })
-      .filter(l => l.nom);
-
-    if (this.editingId) {
-      this.siteService.getSite(this.editingId).subscribe({
-        next: (original) => {
-          const updated: SiteH = {
-            ...original,
-            nom: this.formData.nom,
-            localisation: this.formData.localisation,
-            photo: this.formData.photo,
-            dateConstruction: this.formData.dateConstruction || original.dateConstruction,
-            estClasse: this.formData.estClasse,
-            prixEntree: this.formData.prixEntree,
-            description: this.formData.description,
-            categorie: this.formData.categorie,
-            horaires,
-            visitesGuideesDisponibles: this.formData.visitesGuideesDisponibles,
-            lieuxProches,
-            latitude: this.formData.latitude,
-            longitude: this.formData.longitude
-          };
-
-          this.siteService.updateSite(updated).subscribe({
-            next: () => {
-              alert('Site updated successfully!');
-              this.router.navigate(['/admin/site-crud']);
-            },
-            error: (err) => alert('Error updating site: ' + err.message)
-          });
-        },
-        error: (err) => alert('Error fetching site: ' + err.message)
-      });
-    } else {
-      const newSite: Partial<SiteH> = {
-        nom: this.formData.nom,
-        localisation: this.formData.localisation,
-        photo: this.formData.photo || 'assets/images/default.jpg',
-        dateConstruction: this.formData.dateConstruction || new Date().toISOString(),
-        estClasse: this.formData.estClasse,
-        prixEntree: this.formData.prixEntree,
-        description: this.formData.description,
-        categorie: this.formData.categorie,
-        horaires,
-        visitesGuideesDisponibles: this.formData.visitesGuideesDisponibles,
-        lieuxProches,
-        latitude: this.formData.latitude,
-        longitude: this.formData.longitude,
-        comments: []
-      };
-
-      this.siteService.createSite(newSite).subscribe({
-        next: () => {
-          alert('Site created successfully!');
-          this.router.navigate(['/admin/site-crud']);
-        },
-        error: (err) => alert('Error creating site: ' + err.message)
-      });
-    }
-
+    alert('Save functionality to be implemented');
+    this.router.navigate(['/admin/site-crud']);
     return true;
   }
 

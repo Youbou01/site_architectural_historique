@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Auth } from '../../../../code/services/auth';
+import { Auth } from '../../../../services/auth';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginComponent {
   isRegisterMode = false;
-  isAdminLogin = false;
+  isAdminLogin = true;
   isLoading = false;
   message = '';
 
@@ -53,7 +53,8 @@ export class LoginComponent {
     this.isLoading = true;
     this.message = '';
 
-    this.auth.login(this.loginData.username, this.loginData.password, this.isAdminLogin).subscribe({
+    this.auth.login(this.loginData.username, this.loginData.password, true)
+    .subscribe({
       next: (user) => {
         this.message = 'Connexion réussie !';
         this.isLoading = false;

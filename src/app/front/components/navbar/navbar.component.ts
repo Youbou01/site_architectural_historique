@@ -1,14 +1,16 @@
 import { Component, signal, inject, PLATFORM_ID } from '@angular/core';
 import { RouterLink, Router, RouterModule } from '@angular/router';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Auth } from '../../../services/auth';
 
 /**
  * Composant de navigation principal de l'application.
- * 
+ *
  * Responsabilités:
  * - Affichage de la barre de navigation avec liens vers les différentes sections
  * - Gestion du thème clair/sombre avec persistance dans le DOM
  * - Indication de la route active pour feedback visuel utilisateur
+ * - Gestion de l'état d'authentification et affichage conditionnel des liens admin
  */
 @Component({
   selector: 'app-navbar',
@@ -20,9 +22,10 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 export class NavbarComponent {
   // Signal: thème actuel (dark ou light)
   theme = signal<'dark' | 'light'>('dark');
-  
+
   private readonly platformId = inject(PLATFORM_ID);
   private readonly doc = inject(DOCUMENT);
+  private authService = inject(Auth);
   router = inject(Router);
 
   /**
@@ -41,12 +44,27 @@ export class NavbarComponent {
   /**
    * Vérifie si une route est actuellement active.
    * Utilisé pour appliquer des styles de navigation active.
-   * 
+   *
    * @param path - Chemin de la route à vérifier
    * @returns true si l'URL courante commence par ce chemin
    */
   isActive(path: string) {
     return this.router.url.startsWith(path);
   }
-  
+
+  /**
+   * Vérifie si l'utilisateur est authentifié.
+   * @returns true si un utilisateur est connecté
+   */
+  isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  /**
+   * Déconnecte l'utilisateur et redirige vers la page de login.
+   */
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

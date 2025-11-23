@@ -1,14 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SiteH } from '../../code/models/siteH.model';
+import { SiteH } from '../../../models/siteH.model';
 import { Observable, map, switchMap } from 'rxjs';
-import { Commentaire } from '../../code/models/commentaire.model';
+import { Commentaire } from '../../../models/commentaire.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Site {
-  private base = 'http://localhost:3000/sites';
+  private base = 'http://localhost:3000/patrimoines';
 
   sitesSignal = signal<SiteH[]>([]);
 

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet, Router } from "@angular/router";
-import { Auth } from '../../../code/services/auth';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-admin-layout',

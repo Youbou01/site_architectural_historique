@@ -95,7 +95,7 @@
                 <td>
                   <div class="site-info">
                     <div class="site-image">
-                      <img [src]="s.photo || 'assets/images/default.jpg'" [alt]="s.nom" (error)="onImageError($event)" />
+                      <img [src]="s.photoCarousel[0] || 'assets/images/default.jpg'" [alt]="s.nom" (error)="onImageError($event)" />
                     </div>
                     <div class="site-details">
                       <span class="site-name">{{ s.nom }}</span>
@@ -109,8 +109,8 @@
                   </span>
                 </td>
                 <td>
-                  <span class="category-badge" [ngClass]="getCategoryClass(s.categorie)">
-                    {{ s.categorie }}
+                  <span class="category-badge" [ngClass]="getCategoryClass(s.categories[0] || 'Autre')">
+                    {{ s.categories[0] || 'Autre' }}
                   </span>
                 </td>
                 <td>

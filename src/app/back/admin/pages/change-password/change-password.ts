@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Auth } from '../../../../code/services/auth';
+import { Auth } from '../../../../services/auth';
 
 interface PasswordRequirement {
   id: string;

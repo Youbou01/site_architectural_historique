@@ -54,9 +54,11 @@
         </label>
         <select class="form-select" [(ngModel)]="selectedSiteId">
           <option value="">All Sites</option>
-          <option *ngFor="let site of sites" [value]="site.id">
-            {{ site.nom }} ({{ getCommentsCountForSite(site.id) }} comments)
-          </option>
+          @for (site of sites; track site.id) {
+            <option [value]="site.id">
+              {{ site.nom }} ({{ getCommentsCountForSite(site.id) }} comments)
+            </option>
+          }
         </select>
       </div>
 
@@ -98,8 +100,8 @@
             <i class="bi bi-geo-alt-fill"></i>
             <h5>{{ item.siteName }}</h5>
           </div>
-          <span [class]="'badge ' + getStatusClass(item.comment.approved)">
-            {{ getStatusBadge(item.comment.approved) }}
+          <span [class]="'badge ' + getStatusClass(item.comment.etat)">
+            {{ getStatusBadge(item.comment.etat) }}
           </span>
         </div>
 
@@ -120,12 +122,12 @@
         </div>
 
         <div class="comment-actions">
-          @if(item.comment.approved !== true) {
+          @if(item.comment.etat !== 'approuvé') {
             <button (click)="approve(item)" class="btn btn-sm btn-success">
               <i class="bi bi-check-lg"></i> Approve
             </button>
           }
-          @if(item.comment.approved !== false) {
+          @if(item.comment.etat !== 'rejeté') {
             <button (click)="reject(item)" class="btn btn-sm btn-warning">
               <i class="bi bi-x-lg"></i> Reject
             </button>

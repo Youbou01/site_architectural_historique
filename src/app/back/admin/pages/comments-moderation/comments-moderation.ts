@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Site } from '../../../../core/services/site';
-import { SiteH } from '../../../../code/models/siteH.model';
-import { Commentaire } from '../../../../code/models/commentaire.model';
+import { PatrimoineService } from '../../../../services/patrimoine.service';
+import { SiteHistorique } from '../../../../models/site-historique';
+import { Commentaire, EtatCommentaire } from '../../../../models/commentaire.model';
 
 interface CommentWithSite {
   comment: Commentaire;
@@ -19,31 +19,46 @@ interface CommentWithSite {
 })
 export class CommentsModerationComponent implements OnInit {
   allComments: CommentWithSite[] = [];
-  sites: SiteH[] = [];
+  sites: SiteHistorique[] = [];
   selectedSiteId: string = '';
   selectedStatus: string = '';
 
-  constructor(private siteService: Site) {}
+  constructor(private patrimoineService: PatrimoineService) {}
 
   ngOnInit() {
     this.loadComments();
   }
 
   loadComments() {
-    this.siteService.getSites().subscribe(sites => {
-      this.sites = sites;
+    this.patrimoineService.loadAll();
+
+    setTimeout(() => {
+      this.sites = this.patrimoineService.patrimoines();
       this.allComments = [];
 
-      sites.forEach(site => {
-        (site.comments || []).forEach(comment => {
+      // Collecter tous les commentaires de tous les sites et monuments
+      this.sites.forEach((site: SiteHistorique) => {
+        // Commentaires du site principal
+        (site.comments || []).forEach((comment: Commentaire) => {
           this.allComments.push({
             comment,
             siteId: site.id,
             siteName: site.nom
           });
         });
+
+        // Commentaires des monuments
+        (site.monuments || []).forEach((monument: SiteHistorique) => {
+          (monument.comments || []).forEach((comment: Commentaire) => {
+            this.allComments.push({
+              comment,
+              siteId: monument.id,
+              siteName: `${site.nom} - ${monument.nom}`
+            });
+          });
+        });
       });
-    });
+    }, 500);
   }
 
   filteredComments(): CommentWithSite[] {
@@ -52,11 +67,11 @@ export class CommentsModerationComponent implements OnInit {
 
       let matchStatus = true;
       if (this.selectedStatus === 'approved') {
-        matchStatus = item.comment.approved === true;
+        matchStatus = item.comment.etat === 'approuvé';
       } else if (this.selectedStatus === 'rejected') {
-        matchStatus = item.comment.approved === false;
+        matchStatus = item.comment.etat === 'rejeté';
       } else if (this.selectedStatus === 'pending') {
-        matchStatus = item.comment.approved === undefined;
+        matchStatus = item.comment.etat === 'en attente';
       }
 
       return matchSite && matchStatus;
@@ -68,15 +83,15 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   getApprovedCount(): number {
-    return this.allComments.filter(c => c.comment.approved === true).length;
+    return this.allComments.filter(c => c.comment.etat === 'approuvé').length;
   }
 
   getRejectedCount(): number {
-    return this.allComments.filter(c => c.comment.approved === false).length;
+    return this.allComments.filter(c => c.comment.etat === 'rejeté').length;
   }
 
   getPendingCount(): number {
-    return this.allComments.filter(c => c.comment.approved === undefined).length;
+    return this.allComments.filter(c => c.comment.etat === 'en attente').length;
   }
 
   getCommentsCountForSite(siteId: string): number {
@@ -84,44 +99,70 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   approve(item: CommentWithSite) {
-    item.comment.approved = true;
-
-    const site = this.sites.find(s => s.id === item.siteId);
-    if (site) {
-      this.siteService.updateSite(site).subscribe(() => {
-        this.loadComments();
-      });
-    }
+    item.comment.etat = 'approuvé';
+    this.updateComment(item);
   }
 
   reject(item: CommentWithSite) {
-    item.comment.approved = false;
-
-    const site = this.sites.find(s => s.id === item.siteId);
-    if (site) {
-      this.siteService.updateSite(site).subscribe(() => {
-        this.loadComments();
-      });
-    }
+    item.comment.etat = 'rejeté';
+    this.updateComment(item);
   }
 
   delete(item: CommentWithSite) {
     if (!confirm('Supprimer ce commentaire ?')) return;
 
-    this.siteService.deleteComment(item.siteId, item.comment.id).subscribe(() => {
+    // Trouver le site ou monument contenant ce commentaire
+    const site = this.findSiteWithComment(item.siteId);
+    if (site) {
+      // Supprimer le commentaire du site principal
+      site.comments = site.comments.filter(c => c.id !== item.comment.id);
+
+      // Vérifier aussi dans les monuments
+      site.monuments?.forEach(monument => {
+        if (monument.id === item.siteId) {
+          monument.comments = monument.comments.filter(c => c.id !== item.comment.id);
+        }
+      });
+
       this.loadComments();
-    });
+    }
   }
 
-  getStatusBadge(approved: boolean | undefined): string {
-    if (approved === true) return 'Approved';
-    if (approved === false) return 'Rejected';
-    return 'Pending';
+  private updateComment(item: CommentWithSite) {
+    // Recharger les données pour refléter les changements
+    // Note: Dans une vraie application, vous feriez un appel HTTP PUT ici
+    this.loadComments();
   }
 
-  getStatusClass(approved: boolean | undefined): string {
-    if (approved === true) return 'badge-success';
-    if (approved === false) return 'badge-danger';
-    return 'badge-warning';
+  private findSiteWithComment(siteOrMonumentId: string): SiteHistorique | undefined {
+    // Chercher d'abord parmi les sites principaux
+    let found = this.sites.find(s => s.id === siteOrMonumentId);
+    if (found) return found;
+
+    // Chercher parmi les monuments
+    for (const site of this.sites) {
+      const monument = site.monuments?.find(m => m.id === siteOrMonumentId);
+      if (monument) return site; // Retourner le site parent
+    }
+
+    return undefined;
+  }
+
+  getStatusBadge(etat: EtatCommentaire): string {
+    switch(etat) {
+      case 'approuvé': return 'Approved';
+      case 'rejeté': return 'Rejected';
+      case 'en attente': return 'Pending';
+      default: return 'Unknown';
+    }
+  }
+
+  getStatusClass(etat: EtatCommentaire): string {
+    switch(etat) {
+      case 'approuvé': return 'badge-success';
+      case 'rejeté': return 'badge-danger';
+      case 'en attente': return 'badge-warning';
+      default: return 'badge-secondary';
+    }
   }
 }

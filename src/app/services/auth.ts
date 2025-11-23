@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { UtilisateurAdmin } from '../models/utilisateur-admin.model';
 import { Utilisateur } from '../models/utilisateur';
@@ -9,25 +10,55 @@ type CurrentUser = UtilisateurAdmin | Utilisateur;
 @Injectable({
   providedIn: 'root'
 })
-
 export class Auth {
   private baseAdmins = 'http://localhost:3000/admins';
   private baseUsers = 'http://localhost:3000/users';
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   user = signal<CurrentUser | null>(null);
   userType = signal<'admin' | 'user' | null>(null);
 
   constructor(private http: HttpClient) {
-    const raw = localStorage.getItem('auth_user');
-    const type = localStorage.getItem('auth_type');
-    if (raw && type) {
-      try {
+    // Charger uniquement côté navigateur
+    if (this.isBrowser) {
+      this.loadFromStorage();
+    }
+  }
+
+  private loadFromStorage() {
+    try {
+      const raw = localStorage.getItem('auth_user');
+      const type = localStorage.getItem('auth_type');
+      if (raw && type) {
         this.user.set(JSON.parse(raw));
         this.userType.set(type as 'admin' | 'user');
-      } catch {
-        localStorage.removeItem('auth_user');
-        localStorage.removeItem('auth_type');
       }
+    } catch (error) {
+      console.warn('Failed to load auth from storage:', error);
+      this.clearStorage();
+    }
+  }
+
+  private saveToStorage(user: CurrentUser, type: 'admin' | 'user') {
+    if (!this.isBrowser) return;
+
+    try {
+      localStorage.setItem('auth_user', JSON.stringify(user));
+      localStorage.setItem('auth_type', type);
+    } catch (error) {
+      console.warn('Failed to save auth to storage:', error);
+    }
+  }
+
+  private clearStorage() {
+    if (!this.isBrowser) return;
+
+    try {
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_type');
+    } catch (error) {
+      console.warn('Failed to clear auth storage:', error);
     }
   }
 
@@ -59,9 +90,9 @@ export class Auth {
 
           this.user.set(updatedUser);
           this.userType.set(isAdmin ? 'admin' : 'user');
-          localStorage.setItem('auth_user', JSON.stringify(updatedUser));
-          localStorage.setItem('auth_type', isAdmin ? 'admin' : 'user');
+          this.saveToStorage(updatedUser, isAdmin ? 'admin' : 'user');
 
+          // Mise à jour du dernierLogin dans la base
           this.http.put(`${baseUrl}/${u.id}`, updatedUser).subscribe({
             next: () => {},
             error: (err) => console.warn("Erreur update JSON-server", err)
@@ -79,11 +110,8 @@ export class Auth {
     fullName: string;
     phone?: string;
   }): Observable<Utilisateur> {
-    console.log('Register called with:', data);
-
     return this.http.get<Utilisateur[]>(`${this.baseUsers}?username=${encodeURIComponent(data.username)}`).pipe(
       switchMap((existing) => {
-        console.log('Checking username, found:', existing);
         if (existing.length > 0) {
           return throwError(() => new Error('Ce nom d\'utilisateur existe déjà'));
         }
@@ -91,7 +119,6 @@ export class Auth {
         return this.http.get<Utilisateur[]>(`${this.baseUsers}?email=${encodeURIComponent(data.email)}`);
       }),
       switchMap((existing) => {
-        console.log('Checking email, found:', existing);
         if (existing.length > 0) {
           return throwError(() => new Error('Cet email est déjà utilisé'));
         }
@@ -109,10 +136,8 @@ export class Auth {
           favorites: []
         };
 
-        console.log('Creating new user:', newUser);
         return this.http.post<Utilisateur>(this.baseUsers, newUser);
       }),
-      tap(result => console.log('User created successfully:', result)),
       catchError(err => {
         console.error('Registration error:', err);
         return throwError(() => err);
@@ -123,8 +148,7 @@ export class Auth {
   logout(): void {
     this.user.set(null);
     this.userType.set(null);
-    localStorage.removeItem('auth_user');
-    localStorage.removeItem('auth_type');
+    this.clearStorage();
   }
 
   isAuthenticated(): boolean {
@@ -167,7 +191,7 @@ export class Auth {
         return this.http.put<CurrentUser>(`${baseUrl}/${userId}`, updated).pipe(
           tap(result => {
             this.user.set(result);
-            localStorage.setItem('auth_user', JSON.stringify(result));
+            this.saveToStorage(result, this.userType()!);
           })
         );
       })

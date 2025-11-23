@@ -42,33 +42,6 @@
 
     @if (!isRegisterMode) {
       <form (submit)="login(); $event.preventDefault()" class="login-form">
-      <div class="user-type-selector mb-4">
-        <label class="type-option" [class.selected]="!isAdminLogin">
-          <input
-            type="radio"
-            name="userType"
-            [checked]="!isAdminLogin"
-            (change)="isAdminLogin = false"
-          />
-          <div class="type-content">
-            <i class="bi bi-person-circle"></i>
-            <span>Utilisateur</span>
-          </div>
-        </label>
-        <label class="type-option" [class.selected]="isAdminLogin">
-          <input
-            type="radio"
-            name="userType"
-            [checked]="isAdminLogin"
-            (change)="isAdminLogin = true"
-          />
-          <div class="type-content">
-            <i class="bi bi-shield-lock"></i>
-            <span>Administrateur</span>
-          </div>
-        </label>
-      </div>
-
       <div class="mb-3">
         <label class="form-label">Nom d'utilisateur</label>
         <div class="input-group">
