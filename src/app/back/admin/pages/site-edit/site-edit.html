@@ -1,0 +1,165 @@
+<div class="edit-container">
+  <div class="edit-card">
+    <div class="edit-header">
+      <div class="header-icon">
+        <i class="bi bi-geo-alt-fill"></i>
+      </div>
+      <h2>{{ editingId ? 'Edit Site' : 'Add New Site' }}</h2>
+      <p class="text-muted">{{ editingId ? 'Update site information' : 'Create a new heritage site' }}</p>
+    </div>
+
+    <form (submit)="save(); $event.preventDefault()" class="edit-form">
+      <div class="section-title">
+        <i class="bi bi-info-circle"></i> Basic Information
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Site Name *</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-building"></i></span>
+            <input type="text" class="form-control" [(ngModel)]="formData.nom" name="nom" placeholder="Enter site name" required />
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Location *</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-pin-map"></i></span>
+            <input type="text" class="form-control" [(ngModel)]="formData.localisation" name="localisation" placeholder="Enter location" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Category</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+            <select class="form-select" [(ngModel)]="formData.categorie" name="categorie">
+              <option value="Médina">Médina</option>
+              <option value="Monument">Monument</option>
+              <option value="Musée">Musée</option>
+              <option value="Site Archéologique">Site Archéologique</option>
+              <option value="Religieux">Religieux</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Entry Price (DT)</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+            <input type="number" class="form-control" [(ngModel)]="formData.prixEntree" name="prixEntree" placeholder="0" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" [(ngModel)]="formData.description" name="description" rows="3" placeholder="Enter site description..."></textarea>
+      </div>
+
+      <div class="section-title">
+        <i class="bi bi-image"></i> Media
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Photo URL</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+          <input type="text" class="form-control" [(ngModel)]="formData.photo" name="photo" placeholder="assets/images/site.jpg" />
+        </div>
+        <div class="image-preview" *ngIf="formData.photo">
+          <img [src]="formData.photo" alt="Preview" (error)="onImageError($event)" />
+        </div>
+      </div>
+
+      <div class="section-title">
+        <i class="bi bi-calendar-event"></i> Details
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Construction Date</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+            <input type="date" class="form-control" [(ngModel)]="formData.dateConstruction" name="dateConstruction" />
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Opening Hours</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-clock"></i></span>
+            <input type="text" class="form-control" [(ngModel)]="formData.horaires" name="horaires" placeholder="9:00-17:00, Lun-Fermé" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="formData.estClasse" name="estClasse" id="estClasse" />
+            <label class="form-check-label" for="estClasse">
+              <i class="bi bi-award"></i> UNESCO Classified
+            </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="formData.visitesGuideesDisponibles" name="visitesGuideesDisponibles" id="visitesGuidees" />
+            <label class="form-check-label" for="visitesGuidees">
+              <i class="bi bi-person-badge"></i> Guided Tours Available
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <i class="bi bi-geo"></i> Coordinates
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Latitude</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-globe"></i></span>
+            <input type="number" step="0.0001" class="form-control" [(ngModel)]="formData.latitude" name="latitude" placeholder="36.8065" />
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Longitude</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-globe"></i></span>
+            <input type="number" step="0.0001" class="form-control" [(ngModel)]="formData.longitude" name="longitude" placeholder="10.1815" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <i class="bi bi-signpost-2"></i> Nearby Places
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nearby Places</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-pin-angle"></i></span>
+          <input type="text" class="form-control" [(ngModel)]="formData.lieuxProches" name="lieuxProches" placeholder="Mosquée Zitouna|Religieux|0.1; Souk|Commercial|0.2" />
+        </div>
+        <small class="text-muted">Format: name|type|distance(km); separate multiple with semicolons</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+          <i class="bi bi-x-lg me-2"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-lg me-2"></i>{{ editingId ? 'Update Site' : 'Create Site' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

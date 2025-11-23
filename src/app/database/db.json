@@ -1045,7 +1045,7 @@
               "message": "Très bien conservé.",
               "date": "2025-06-02",
               "note": 4,
-              "etat": "approuvé"
+              "etat": "pending"
             },
             {
               "id": "c-ghr-004",
@@ -1053,7 +1053,7 @@
               "message": "Accueil chaleureux.",
               "date": "2025-08-18",
               "note": 4,
-              "etat": "approuvé"
+              "etat": "pending"
             },
             {
               "id": "c-ghr-005",
@@ -1106,7 +1106,7 @@
               "message": "Ambiance unique.",
               "date": "2025-07-02",
               "note": 5,
-              "etat": "approuvé"
+              "etat": "rejected"
             },
             {
               "id": "c-houmt-004",
@@ -1114,12 +1114,108 @@
               "message": "Négocier le prix est courant.",
               "date": "2025-08-27",
               "note": 4,
-              "etat": "approuvé"
+              "etat": "rejected"
             }
           ],
           "stats": { "vues": 0, "favoris": 0, "noteMoyenne": 4.6 }
         }
       ]
+    }
+  ],
+  "admins": [
+    {
+      "id": "admin-1",
+      "username": "admin",
+      "email": "admin@patrimoine.tn",
+      "password": "admin",
+      "role": "super_admin",
+      "fullName": "Mohamed Administrateur",
+      "avatar": "https://i.pravatar.cc/150?u=17",
+      "phone": "+216 20 123 456",
+      "dateCreated": "2024-01-15T10:00:00.000Z",
+      "dernierLogin": "2025-11-23T14:36:21.743Z",
+      "isActive": true,
+      "type": "admin"
+    },
+    {
+      "id": "admin-2",
+      "username": "moderator1",
+      "email": "moderator@patrimoine.tn",
+      "password": "moderator123",
+      "role": "moderator",
+      "fullName": "Fatma Ben Salem",
+      "avatar": "https://i.pravatar.cc/150?u=10",
+      "phone": "+216 22 456 789",
+      "dateCreated": "2024-03-20T14:30:00.000Z",
+      "dernierLogin": "2025-11-23T02:03:09.087Z",
+      "isActive": true,
+      "type": "admin"
+    },
+    {
+      "id": "admin-3",
+      "username": "editor1",
+      "email": "editor@patrimoine.tn",
+      "password": "editor123",
+      "role": "editor",
+      "fullName": "Ahmed Trabelsi",
+      "avatar": "https://i.pravatar.cc/150?u=100",
+      "phone": "+216 23 789 012",
+      "dateCreated": "2024-06-10T09:15:00.000Z",
+      "dernierLogin": "2025-11-23T02:03:21.062Z",
+      "isActive": true,
+      "type": "admin"
+    }
+  ],
+  "users": [
+    {
+      "id": "user-1",
+      "username": "user1",
+      "email": "user1@example.com",
+      "password": "user123",
+      "fullName": "Amine Khelifi",
+      "avatar": "https://i.pravatar.cc/150?u=user1",
+      "phone": "+216 98 765 432",
+      "dateCreated": "2025-01-10T08:00:00.000Z",
+      "dernierLogin": "2025-11-23T02:46:41.436Z",
+      "isActive": true,
+      "favorites": [
+        "1"
+      ],
+      "type": "user",
+      "role": "user"
+    },
+    {
+      "id": "user-2",
+      "username": "sarah",
+      "email": "sarah@example.com",
+      "password": "sarah123",
+      "fullName": "Sarah Martinez",
+      "avatar": "https://i.pravatar.cc/150?u=sarah",
+      "phone": "+216 55 123 456",
+      "dateCreated": "2025-02-15T10:20:00.000Z",
+      "dernierLogin": "2025-11-23T02:37:59.266Z",
+      "isActive": false,
+      "favorites": [
+        "1",
+        "2"
+      ],
+      "type": "user",
+      "role": "user"
+    },
+    {
+      "id": "d7f7",
+      "username": "hh",
+      "email": "hh@gmail.com",
+      "password": "hhhhhh",
+      "fullName": "hh",
+      "phone": "hh",
+      "avatar": "https://i.pravatar.cc/150?u=hh",
+      "dateCreated": "2025-11-23T02:43:16.784Z",
+      "dernierLogin": "2025-11-23T02:43:18.308Z",
+      "isActive": true,
+      "favorites": [],
+      "type": "user",
+      "role": "user"
     }
   ]
 }

@@ -1,0 +1,253 @@
+<div class="crud-container">
+  <div class="crud-card">
+    <div class="crud-header">
+      <div class="header-icon">
+        <i class="bi bi-geo-alt-fill"></i>
+      </div>
+      <h2>Manage Sites</h2>
+      <p class="text-muted">Add, edit, and manage heritage sites</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary">
+          <i class="bi bi-building"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ sites.length }}</span>
+          <span class="stat-label">Total Sites</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon bg-success">
+          <i class="bi bi-award"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ getClassifiedCount() }}</span>
+          <span class="stat-label">UNESCO Classified</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon bg-warning">
+          <i class="bi bi-cash"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ getFreeCount() }}</span>
+          <span class="stat-label">Free Entry</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <i class="bi bi-search"></i> Search & Filter
+    </div>
+
+    <div class="search-filter-row">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Search sites by name or location..." />
+      </div>
+      <select class="form-select filter-select" [(ngModel)]="filterCategory">
+        <option value="">All Categories</option>
+        <option value="Médina">Médina</option>
+        <option value="Monument">Monument</option>
+        <option value="Musée">Musée</option>
+        <option value="Site Archéologique">Site Archéologique</option>
+        <option value="Religieux">Religieux</option>
+        <option value="Autre">Autre</option>
+      </select>
+      <button (click)="openAddForm()" class="btn btn-add">
+        <i class="bi bi-plus-lg me-2"></i>Add New Site
+      </button>
+    </div>
+
+    <div class="section-title">
+      <i class="bi bi-list-ul"></i> Sites List
+    </div>
+
+    @if (filteredSites().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h4>No sites found</h4>
+        <p>{{ searchTerm || filterCategory ? 'Try adjusting your search or filter' : 'Start by adding a new heritage site' }}</p>
+        <button (click)="openAddForm()" class="btn btn-add">
+          <i class="bi bi-plus-lg me-2"></i>Add First Site
+        </button>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>Location</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of filteredSites(); track s.id) {
+              <tr>
+                <td>
+                  <div class="site-info">
+                    <div class="site-image">
+                      <img [src]="s.photo || 'assets/images/default.jpg'" [alt]="s.nom" (error)="onImageError($event)" />
+                    </div>
+                    <div class="site-details">
+                      <span class="site-name">{{ s.nom }}</span>
+                      <span class="site-desc">{{ truncate(s.description, 40) }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="location-badge">
+                    <i class="bi bi-pin-map me-1"></i>{{ s.localisation }}
+                  </span>
+                </td>
+                <td>
+                  <span class="category-badge" [ngClass]="getCategoryClass(s.categorie)">
+                    {{ s.categorie }}
+                  </span>
+                </td>
+                <td>
+                  <span class="price-badge" [ngClass]="s.prixEntree === 0 ? 'free' : ''">
+                    {{ s.prixEntree === 0 ? 'Free' : s.prixEntree + ' DT' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="s.estClasse ? 'classified' : 'standard'">
+                    <i class="bi" [ngClass]="s.estClasse ? 'bi-award-fill' : 'bi-building'"></i>
+                    {{ s.estClasse ? 'UNESCO' : 'Standard' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <a [routerLink]="['/admin/site-edit', s.id]" class="btn-action btn-edit" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <button (click)="delete(s.id)" class="btn-action btn-delete" title="Delete">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="modal-overlay" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="bi" [ngClass]="editingId ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+          {{ editingId ? 'Edit Site' : 'Add New Site' }}
+        </h3>
+        <button type="button" class="btn-close" (click)="cancelForm()"></button>
+      </div>
+
+      <form (submit)="saveSite(); $event.preventDefault()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Site Name *</label>
+              <input type="text" [(ngModel)]="formData.nom" name="nom" class="form-control" placeholder="Enter site name" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Location *</label>
+              <input type="text" [(ngModel)]="formData.localisation" name="localisation" class="form-control" placeholder="Enter location" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Category</label>
+              <select [(ngModel)]="formData.categorie" name="categorie" class="form-select">
+                <option value="Médina">Médina</option>
+                <option value="Monument">Monument</option>
+                <option value="Musée">Musée</option>
+                <option value="Site Archéologique">Site Archéologique</option>
+                <option value="Religieux">Religieux</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Entry Price (DT)</label>
+              <input type="number" [(ngModel)]="formData.prixEntree" name="prixEntree" class="form-control" placeholder="0" min="0" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Photo URL</label>
+            <input type="text" [(ngModel)]="formData.photo" name="photo" class="form-control" placeholder="assets/images/site.jpg" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea [(ngModel)]="formData.description" name="description" class="form-control" rows="3" placeholder="Enter description..."></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Construction Date</label>
+              <input type="date" [(ngModel)]="formData.dateConstruction" name="dateConstruction" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Opening Hours</label>
+              <input type="text" [(ngModel)]="formData.horaires" name="horaires" class="form-control" placeholder="9:00-17:00, Lun-Fermé" />
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="formData.estClasse" name="estClasse" id="estClasse" />
+                <label class="form-check-label" for="estClasse">UNESCO Classified</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="formData.visitesGuideesDisponibles" name="visitesGuideesDisponibles" id="guidedTours" />
+                <label class="form-check-label" for="guidedTours">Guided Tours Available</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Latitude</label>
+              <input type="number" step="0.0001" [(ngModel)]="formData.latitude" name="latitude" class="form-control" placeholder="36.8065" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Longitude</label>
+              <input type="number" step="0.0001" [(ngModel)]="formData.longitude" name="longitude" class="form-control" placeholder="10.1815" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nearby Places</label>
+            <input type="text" [(ngModel)]="formData.lieuxProches" name="lieuxProches" class="form-control" placeholder="Mosquée|Religieux|0.1; Souk|Commercial|0.2" />
+            <small class="text-muted">Format: name|type|distance(km); separate with semicolons</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()">
+            <i class="bi bi-x-lg me-1"></i>Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>{{ editingId ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

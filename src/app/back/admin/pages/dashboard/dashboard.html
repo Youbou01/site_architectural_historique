@@ -1,0 +1,56 @@
+<h2>Dashboard</h2>
+
+<div class="alert alert-info">
+  @if(isLoading){
+    Loading statistics...
+  }
+</div>
+
+<div class="dashboard-container">
+  @if(!isLoading && stats){
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">Total Sites</div>
+        <div class="card-value">{{ stats.totalSites }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Total Comments</div>
+        <div class="card-value">{{ stats.totalComments }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Average Rating</div>
+        <div class="card-value">{{ stats.avgRating ? (stats.avgRating | number: '1.1-2') + '/5' : 'N/A' }}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Top Sites by Comments</h3>
+      <div class="alert alert-info">
+        @if(stats.topSitesByComments.length === 0){
+          No comments yet
+        }
+      </div>
+
+      @if(stats.topSitesByComments.length > 0){
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Site Name</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(item of stats.topSitesByComments; track $index) {
+              <tr>
+                <td>{{ item.site.nom }}</td>
+                <td>{{ item.comments }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>

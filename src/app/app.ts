@@ -10,4 +10,6 @@ import { FooterComponent } from './front/components/footer/footer.component';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class App {}
+export class App {
+  protected readonly title = signal('Projet');
+}
