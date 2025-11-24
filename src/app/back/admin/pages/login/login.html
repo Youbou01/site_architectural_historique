@@ -10,12 +10,12 @@
 
     @if (message) {
       <div class="alert" [ngClass]="{
-        'alert-success': message.includes('succès') || message.includes('réussie'),
-        'alert-danger': !message.includes('succès') && !message.includes('réussie'),
+        'alert-success': isSuccess,
+        'alert-danger': !isSuccess,
       }">
         <i class="bi" [ngClass]="{
-          'bi-check-circle': message.includes('succès') || message.includes('réussie'),
-          'bi-exclamation-circle': !message.includes('succès') && !message.includes('réussie')
+          'bi-check-circle': isSuccess,
+          'bi-exclamation-circle': !isSuccess
         }"></i>
         {{ message }}
       </div>

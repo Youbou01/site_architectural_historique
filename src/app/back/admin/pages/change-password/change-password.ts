@@ -21,6 +21,7 @@ export class ChangePasswordComponent {
   confirmPassword = '';
   message = '';
   isLoading = false;
+  isSuccess = false;
 
   showOldPassword = false;
   showNewPassword = false;
@@ -67,31 +68,37 @@ export class ChangePasswordComponent {
   updatePassword(): boolean {
     if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
       this.message = 'Please fill all fields';
+      this.isSuccess = false;
       return false;
     }
 
     if (this.newPassword !== this.confirmPassword) {
       this.message = 'New passwords do not match';
+      this.isSuccess = false;
       return false;
     }
 
     if (!this.isPasswordValid()) {
       this.message = 'Password does not meet requirements';
+      this.isSuccess = false;
       return false;
     }
 
     const user = this.auth.getUser();
     if (!user) {
       this.message = 'User not authenticated';
+      this.isSuccess = false;
       return false;
     }
 
     this.isLoading = true;
     this.message = '';
+    this.isSuccess = false;
 
     this.auth.changePassword(user.id, this.oldPassword, this.newPassword).subscribe({
       next: () => {
         this.message = 'Password updated successfully!';
+        this.isSuccess = true;
         this.oldPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
@@ -99,6 +106,7 @@ export class ChangePasswordComponent {
       },
       error: (err) => {
         this.message = 'Error: ' + (err.message || 'Failed to update password');
+        this.isSuccess = false;
         this.isLoading = false;
       }
     });

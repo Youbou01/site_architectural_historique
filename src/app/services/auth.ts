@@ -70,17 +70,17 @@ export class Auth {
       .pipe(
         switchMap((list: CurrentUser[]) => {
           if (!Array.isArray(list) || list.length === 0) {
-            throw new Error('Utilisateur non trouvé');
+            return throwError(() => new Error('Utilisateur non trouvé'));
           }
 
           const u = list[0];
 
           if (password !== u.password) {
-            throw new Error('Mot de passe incorrect');
+            return throwError(() => new Error('Mot de passe incorrect'));
           }
 
           if (!u.isActive) {
-            throw new Error('Compte désactivé');
+            return throwError(() => new Error('Compte désactivé'));
           }
 
           const updatedUser: CurrentUser = {
@@ -99,6 +99,10 @@ export class Auth {
           });
 
           return from(Promise.resolve(updatedUser));
+        }),
+        catchError((error) => {
+          console.error('Login error:', error);
+          return throwError(() => error);
         })
       );
   }
@@ -176,10 +180,12 @@ export class Auth {
 
     return this.http.get<CurrentUser>(`${baseUrl}/${userId}`).pipe(
       switchMap((u) => {
-        if (!u) throw new Error('Utilisateur introuvable');
+        if (!u) {
+          return throwError(() => new Error('Utilisateur introuvable'));
+        }
 
         if (oldPassword !== u.password) {
-          throw new Error('Ancien mot de passe incorrect');
+          return throwError(() => new Error('Ancien mot de passe incorrect'));
         }
 
         const updated: CurrentUser = {
@@ -194,6 +200,10 @@ export class Auth {
             this.saveToStorage(result, this.userType()!);
           })
         );
+      }),
+      catchError((error) => {
+        console.error('Change password error:', error);
+        return throwError(() => error);
       })
     );
   }
