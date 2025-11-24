@@ -9,19 +9,25 @@
     </div>
 
     @if (message) {
-      <div class="alert" [ngClass]="{
+    <div
+      class="alert"
+      [ngClass]="{
         'alert-success': isSuccess,
         'alert-danger': !isSuccess,
-      }">
-        <i class="bi" [ngClass]="{
+      }"
+    >
+      <i
+        class="bi"
+        [ngClass]="{
           'bi-check-circle': isSuccess,
           'bi-exclamation-circle': !isSuccess
-        }"></i>
-        {{ message }}
-      </div>
+        }"
+      ></i>
+      {{ message }}
+    </div>
     }
 
-    <form (submit)="login(); $event.preventDefault()" class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
       <div class="mb-3">
         <label class="form-label">Nom d'utilisateur</label>
         <div class="input-group">
@@ -31,13 +37,21 @@
           <input
             type="text"
             class="form-control"
+            [class.is-invalid]="username?.invalid && username?.touched"
             placeholder="Entrez votre nom d'utilisateur"
-            [(ngModel)]="loginData.username"
-            name="username"
-            required
+            formControlName="username"
             autocomplete="username"
           />
         </div>
+        @if (username?.invalid && username?.touched) {
+        <div class="text-danger small mt-1">
+          @if (username?.errors?.['required']) {
+          <span>Le nom d'utilisateur est requis</span>
+          } @if (username?.errors?.['minlength']) {
+          <span>Le nom d'utilisateur doit contenir au moins 3 caractères</span>
+          }
+        </div>
+        }
       </div>
 
       <div class="mb-4">
@@ -49,10 +63,9 @@
           <input
             [type]="showLoginPassword ? 'text' : 'password'"
             class="form-control"
+            [class.is-invalid]="password?.invalid && password?.touched"
             placeholder="Entrez votre mot de passe"
-            [(ngModel)]="loginData.password"
-            name="password"
-            required
+            formControlName="password"
             autocomplete="current-password"
           />
           <button
@@ -60,22 +73,33 @@
             class="btn btn-outline-secondary"
             (click)="showLoginPassword = !showLoginPassword"
           >
-            <i class="bi" [class.bi-eye]="!showLoginPassword" [class.bi-eye-slash]="showLoginPassword"></i>
+            <i
+              class="bi"
+              [class.bi-eye]="!showLoginPassword"
+              [class.bi-eye-slash]="showLoginPassword"
+            ></i>
           </button>
         </div>
+        @if (password?.invalid && password?.touched) {
+        <div class="text-danger small mt-1">
+          @if (password?.errors?.['required']) {
+          <span>Le mot de passe est requis</span>
+          } @if (password?.errors?.['minlength']) {
+          <span>Le mot de passe doit contenir au moins 6 caractères</span>
+          }
+        </div>
+        }
       </div>
 
       <button
         type="submit"
         class="btn btn-primary w-100"
-        [disabled]="isLoading"
+        [disabled]="isLoading || loginForm.invalid"
       >
         @if (isLoading) {
-          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Connexion en cours...
-        } @else {
-          <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
-        }
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Connexion en cours... } @else {
+        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter }
       </button>
     </form>
 

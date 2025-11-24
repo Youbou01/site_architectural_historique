@@ -1,15 +1,12 @@
 {
   "patrimoines": [
     {
-      "id": "place-001",
       "nom": "El Jem",
       "localisation": "El Jem, Mahdia Governorate",
       "description": "Située à une soixantaine de kilomètres de Sousse, El Jem illustre le lien entre la Tunisie et l’Empire romain. Un colisée imposant, des villas d’aristocrates, une tradition ancestrale de la mosaïque… Découvrez l’héritage de cette perle du Sahel",
       "origineHistorique": "Antiquité romaine",
       "photoCarousel": [
-        "images/eljem_1.jpg",
-        "images/eljem_2.jpg",
-        "images/eljem_3.jpg"
+        "images/eljem_1.jpg"
       ],
       "latitude": 35.3006,
       "longitude": 10.7069,
@@ -18,7 +15,7 @@
       ],
       "dateConstruction": "238-01-01",
       "estClasse": true,
-      "prixEntree": 6,
+      "prixEntree": 5,
       "ouvert": true,
       "horaires": [
         "09:00-17:00"
@@ -114,7 +111,8 @@
             "noteMoyenne": 4.6
           }
         }
-      ]
+      ],
+      "id": "place-001"
     },
     {
       "id": "place-002",
@@ -1461,77 +1459,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "6847",
-      "nom": "hh",
-      "localisation": "hh",
-      "description": "",
-      "origineHistorique": "",
-      "photoCarousel": [],
-      "latitude": 10,
-      "longitude": 15,
-      "categories": [
-        "Patrimoine immatériel"
-      ],
-      "dateConstruction": "2021-01-12",
-      "estClasse": false,
-      "prixEntree": 5,
-      "ouvert": true,
-      "horaires": [
-        "9:00-17:00",
-        "Lun-Ferme"
-      ],
-      "visitesGuideesDisponibles": false,
-      "lieuxProches": [],
-      "comments": [],
-      "stats": {
-        "vues": 0,
-        "favoris": 0,
-        "noteMoyenne": 0
-      },
-      "monuments": [
-        {
-          "id": "mon-6847-1763947117865",
-          "nom": "gg",
-          "localisation": "hh",
-          "adresse": "gg",
-          "description": "gg",
-          "origineHistorique": "gg",
-          "photoCarousel": [],
-          "latitude": 10,
-          "longitude": 20,
-          "dateConstruction": "2020-10-05",
-          "estClasse": false,
-          "prixEntree": 10,
-          "ouvert": true,
-          "horaires": [
-            "9:00-17:00",
-            "Lun-Ferme"
-          ],
-          "categories": [
-            "gg"
-          ],
-          "visitesGuideesDisponibles": false,
-          "lieuxProches": [],
-          "comments": [
-            {
-              "id": "c-mon-6847-1763947117865-1764008434670",
-              "nom": "ayoub",
-              "message": "youbou accept me",
-              "date": "2025-11-24",
-              "note": "3",
-              "etat": "approuvé"
-            }
-          ],
-          "monuments": [],
-          "stats": {
-            "vues": 0,
-            "favoris": 0,
-            "noteMoyenne": 0
-          }
-        }
-      ]
     }
   ],
   "admins": [
@@ -1539,13 +1466,13 @@
       "id": "admin-1",
       "username": "admin",
       "email": "admin@patrimoine.tn",
-      "password": "Admin0",
+      "password": "Admin123",
       "role": "admin",
       "fullName": "Mohamed Administrateur",
       "avatar": "https://i.pravatar.cc/150?u=17",
       "phone": "+216 20 123 456",
       "dateCreated": "2024-01-15T10:00:00.000Z",
-      "dernierLogin": "2025-11-24T19:32:39.319Z",
+      "dernierLogin": "2025-11-24T22:40:29.905Z",
       "isActive": true,
       "type": "admin"
     }
