@@ -485,8 +485,8 @@
 
 .comment.approved {
   opacity: 1;
-  background: rgba(34, 197, 94, 0.05);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .comment.rejected {

@@ -140,7 +140,7 @@ export class PatrimoineDetailComponent {
   /**
    * Calcul dérivé: tous les commentaires de tous les monuments, aplatis en une seule liste.
    * Utilisé pour afficher l'onglet "Commentaires" global du patrimoine.
-   * Includes both patrimoine-level comments and monument comments.
+   * Inclut les commentaires au niveau patrimoine et au niveau monument.
    */
   allComments = computed(() => {
     const p = this.patrimoine();
