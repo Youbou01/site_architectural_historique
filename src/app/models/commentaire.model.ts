@@ -1,4 +1,4 @@
-export type EtatCommentaire = 'approuvé' | 'en attente' | 'rejeté';
+export type EtatCommentaire = 'approuvé' | 'en attente' | 'rejeté' | 'pending';
 
 export interface Commentaire {
   id: string;

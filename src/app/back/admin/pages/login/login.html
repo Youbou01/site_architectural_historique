@@ -2,46 +2,26 @@
   <div class="login-card">
     <div class="login-header">
       <div class="login-icon">
-        <i class="bi bi-geo-alt-fill"></i>
+        <i class="bi bi-shield-lock-fill"></i>
       </div>
-      <h2>Patrimoine Tunisien</h2>
-      <p class="text-muted">Découvrez et explorez notre patrimoine</p>
-    </div>
-
-    <div class="login-tabs">
-      <button
-        class="tab-button"
-        [class.active]="!isRegisterMode"
-        (click)="isRegisterMode = false"
-      >
-        <i class="bi bi-box-arrow-in-right me-2"></i>Connexion
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="isRegisterMode"
-        (click)="isRegisterMode = true"
-      >
-        <i class="bi bi-person-plus me-2"></i>Inscription
-      </button>
+      <h2>Administration</h2>
+      <p class="text-muted">Connexion Administrateur</p>
     </div>
 
     @if (message) {
       <div class="alert" [ngClass]="{
-        'alert-success': message.includes('succès') || message.includes('réussie') || message.includes('successfully') || message.includes('créé'),
-        'alert-danger': !message.includes('succès') && !message.includes('réussie') && !message.includes('successfully') && !message.includes('créé') && !message.includes('En cours'),
-        'alert-info': message.includes('En cours') || message.includes('Création')
+        'alert-success': message.includes('succès') || message.includes('réussie'),
+        'alert-danger': !message.includes('succès') && !message.includes('réussie'),
       }">
         <i class="bi" [ngClass]="{
-          'bi-check-circle': message.includes('succès') || message.includes('réussie') || message.includes('successfully') || message.includes('créé'),
-          'bi-exclamation-circle': !message.includes('succès') && !message.includes('réussie') && !message.includes('successfully') && !message.includes('créé') && !message.includes('En cours'),
-          'bi-info-circle': message.includes('En cours') || message.includes('Création')
+          'bi-check-circle': message.includes('succès') || message.includes('réussie'),
+          'bi-exclamation-circle': !message.includes('succès') && !message.includes('réussie')
         }"></i>
         {{ message }}
       </div>
     }
 
-    @if (!isRegisterMode) {
-      <form (submit)="login(); $event.preventDefault()" class="login-form">
+    <form (submit)="login(); $event.preventDefault()" class="login-form">
       <div class="mb-3">
         <label class="form-label">Nom d'utilisateur</label>
         <div class="input-group">
@@ -80,200 +60,29 @@
             class="btn btn-outline-secondary"
             (click)="showLoginPassword = !showLoginPassword"
           >
-            <i class="bi" [ngClass]="showLoginPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+            <i class="bi" [class.bi-eye]="!showLoginPassword" [class.bi-eye-slash]="showLoginPassword"></i>
           </button>
         </div>
       </div>
 
-      <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary btn-lg" [disabled]="isLoading">
-          @if (isLoading) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-          }
-          @if (!isLoading) {
-            <i class="bi bi-box-arrow-in-right me-2"></i>
-          }
-          {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-        </button>
-      </div>
-
-      <div class="text-center">
-        <small class="text-muted">
-          Pas encore de compte ?
-          <a href="#" (click)="isRegisterMode = true; $event.preventDefault()" class="text-primary">
-            Créer un compte
-          </a>
-        </small>
-      </div>
-    </form>
-    }
-
-    @if (isRegisterMode) {
-      <form (submit)="register(); $event.preventDefault()" class="login-form">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Nom complet *</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-person-badge"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Ex: Ahmed Ben Ali"
-              [(ngModel)]="registerData.fullName"
-              name="fullName"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Nom d'utilisateur *</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-at"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Ex: ahmed123"
-              [(ngModel)]="registerData.username"
-              name="regUsername"
-              required
-              autocomplete="username"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Email *</label>
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="bi bi-envelope"></i>
-          </span>
-          <input
-            type="email"
-            class="form-control"
-            placeholder="email@example.com"
-            [(ngModel)]="registerData.email"
-            name="email"
-            required
-            autocomplete="email"
-          />
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Téléphone</label>
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="bi bi-telephone"></i>
-          </span>
-          <input
-            type="tel"
-            class="form-control"
-            placeholder="+216 XX XXX XXX"
-            [(ngModel)]="registerData.phone"
-            name="phone"
-          />
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Mot de passe *</label>
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="bi bi-lock"></i>
-          </span>
-          <input
-            [type]="showRegPassword ? 'text' : 'password'"
-            class="form-control"
-            placeholder="Minimum 6 caractères"
-            [(ngModel)]="registerData.password"
-            name="regPassword"
-            required
-            autocomplete="new-password"
-          />
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            (click)="showRegPassword = !showRegPassword"
-          >
-            <i class="bi" [ngClass]="showRegPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="form-label">Confirmer le mot de passe *</label>
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="bi bi-lock-fill"></i>
-          </span>
-          <input
-            [type]="showConfirmPassword ? 'text' : 'password'"
-            class="form-control"
-            placeholder="Répétez votre mot de passe"
-            [(ngModel)]="registerData.confirmPassword"
-            name="confirmPassword"
-            required
-            autocomplete="new-password"
-          />
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            (click)="showConfirmPassword = !showConfirmPassword"
-          >
-            <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
-          </button>
-        </div>
-        @if (registerData.confirmPassword && registerData.password !== registerData.confirmPassword) {
-          <small class="text-danger">
-            <i class="bi bi-x-circle"></i> Les mots de passe ne correspondent pas
-          </small>
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="isLoading"
+      >
+        @if (isLoading) {
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Connexion en cours...
+        } @else {
+          <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
         }
-      </div>
-
-      <div class="password-requirements mb-4">
-        <p class="mb-2"><strong>Exigences du mot de passe :</strong></p>
-        <ul>
-          <li [ngClass]="{'text-success': registerData.password.length >= 6, 'text-muted': registerData.password.length < 6}">
-            <i class="bi" [ngClass]="registerData.password.length >= 6 ? 'bi-check-circle-fill' : 'bi-circle'"></i>
-            Au moins 6 caractères
-          </li>
-        </ul>
-      </div>
-
-      <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary btn-lg" [disabled]="isLoading">
-          @if (isLoading) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-          }
-          @if (!isLoading) {
-            <i class="bi bi-person-plus me-2"></i>
-          }
-          {{ isLoading ? 'Création...' : 'Créer mon compte' }}
-        </button>
-      </div>
-
-      <div class="text-center">
-        <small class="text-muted">
-          Déjà un compte ?
-          <a href="#" (click)="isRegisterMode = false; $event.preventDefault()" class="text-primary">
-            Se connecter
-          </a>
-        </small>
-      </div>
+      </button>
     </form>
-    }
 
     <div class="login-footer">
-      <p class="text-muted mb-0">
-        <i class="bi bi-shield-check me-1"></i>
-        Vos données sont sécurisées
-      </p>
+      <a routerLink="/" class="text-decoration-none">
+        <i class="bi bi-arrow-left me-2"></i>Retour au site
+      </a>
     </div>
   </div>
 </div>

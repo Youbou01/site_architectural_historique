@@ -3,20 +3,20 @@
     <div class="crud-card mb-4">
       <div class="crud-header">
         <div class="header-icon">
-          <i class="bi bi-people-fill"></i>
+          <i class="bi bi-shield-lock-fill"></i>
         </div>
-        <h2>User Management</h2>
-        <p class="text-muted">Manage administrators and regular users</p>
+        <h2>Administrator Management</h2>
+        <p class="text-muted">Manage system administrators</p>
       </div>
 
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-icon bg-primary">
-            <i class="bi bi-people"></i>
+            <i class="bi bi-shield-fill"></i>
           </div>
           <div class="stat-info">
             <span class="stat-number">{{ getTotalUsers() }}</span>
-            <span class="stat-label">Total (Users & Admins)</span>
+            <span class="stat-label">Total Admins</span>
           </div>
         </div>
         <div class="stat-card">
@@ -35,15 +35,6 @@
           <div class="stat-info">
             <span class="stat-number">{{ getInactiveUsers() }}</span>
             <span class="stat-label">Inactive</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon bg-warning">
-            <i class="bi bi-shield-fill"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-number">{{ getTotalAdmins() }}</span>
-            <span class="stat-label">Admins</span>
           </div>
         </div>
       </div>
@@ -68,16 +59,6 @@
         </div>
         <select
           class="form-select me-2"
-          [(ngModel)]="filterRole"
-          (ngModelChange)="applyFilters()"
-          style="max-width: 150px"
-        >
-          <option value="">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-        </select>
-        <select
-          class="form-select me-2"
           [(ngModel)]="filterStatus"
           (ngModelChange)="applyFilters()"
           style="max-width: 150px"
@@ -87,31 +68,30 @@
           <option value="inactive">Inactive</option>
         </select>
         <button (click)="openAddForm()" class="btn btn-add">
-          <i class="bi bi-plus-lg me-2"></i>Add User
+          <i class="bi bi-plus-lg me-2"></i>Add Admin
         </button>
       </div>
     </div>
 
     <div class="crud-card">
       <div class="section-title mb-3">
-        <i class="bi bi-list-ul"></i> Users List
+        <i class="bi bi-shield-lock-fill"></i> Administrators List
       </div>
 
       @if (filteredUsers.length === 0) {
         <div class="empty-state">
           <i class="bi bi-person-x"></i>
-          <h4>No users found</h4>
-          <p>{{ searchTerm || filterRole || filterStatus ? 'Try adjusting your filters' : 'Start by adding a user' }}</p>
+          <h4>No administrators found</h4>
+          <p>{{ searchTerm || filterStatus ? 'Try adjusting your filters' : 'Start by adding an administrator' }}</p>
         </div>
       } @else {
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th>User</th>
+                <th>Administrator</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
                 <th>Status</th>
                 <th>Last Login</th>
                 <th>Actions</th>
@@ -146,12 +126,6 @@
                     } @else {
                       <span class="text-muted">-</span>
                     }
-                  </td>
-                  <td>
-                    <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role || 'user')">
-                      <i class="bi bi-shield"></i>
-                      {{ getRoleLabel(user.role || 'user') }}
-                    </span>
                   </td>
                   <td>
                     <span class="status-badge" [class.active]="user.isActive">
@@ -206,7 +180,7 @@
       <div class="modal-header">
         <h3>
           <i class="bi" [ngClass]="editingId ? 'bi-person-gear' : 'bi-person-plus'"></i>
-          {{ editingId ? 'Edit User' : 'Add New User' }}
+          {{ editingId ? 'Edit Administrator' : 'Add New Administrator' }}
         </h3>
         <button type="button" class="btn-close" (click)="cancelForm()"></button>
       </div>
@@ -263,13 +237,6 @@
               [(ngModel)]="formData.password"
               placeholder="••••••••"
             />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Role *</label>
-            <select class="form-select" [(ngModel)]="formData.role">
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
           </div>
         </div>
 

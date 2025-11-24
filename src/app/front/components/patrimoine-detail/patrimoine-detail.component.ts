@@ -2,10 +2,12 @@ import { Component, computed, signal, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FetchedImage } from '../../../services/image.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PatrimoineService } from '../../../services/patrimoine.service';
 import { FavoritesService } from '../../../services/favorites.service';
 import { SiteHistorique } from '../../../models/site-historique';
+import { Commentaire } from '../../../models/commentaire.model';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CarouselComponent } from '../ui/carousel/carousel.component';
 import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
@@ -33,6 +35,7 @@ type TabKey = 'about' | 'monuments' | 'comments' | 'map';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     CarouselComponent,
     SafeUrlPipe,
@@ -78,6 +81,14 @@ export class PatrimoineDetailComponent {
   activeTab = signal<TabKey>('about');        // Onglet actif
   monumentSearch = signal('');                // Recherche dans les monuments
   monumentCategory = signal('');              // Filtre de catégorie pour monuments
+  showCommentForm = signal(false);            // Affichage du formulaire de commentaire
+
+  // New comment data
+  newComment = {
+    nom: '',
+    message: '',
+    note: null as number | null
+  };
 
   constructor() {
     // Récupération de l'ID depuis les paramètres de route
@@ -240,5 +251,76 @@ export class PatrimoineDetailComponent {
    */
   toggleFavoritePatrimoine() {
     this.favorites.togglePatrimoine(this.patrimoine());
+  }
+
+  /**
+   * Toggle the comment form visibility
+   */
+  toggleCommentForm() {
+    this.showCommentForm.set(!this.showCommentForm());
+    if (!this.showCommentForm()) {
+      this.resetCommentForm();
+    }
+  }
+
+  /**
+   * Reset the comment form
+   */
+  resetCommentForm() {
+    this.newComment = {
+      nom: '',
+      message: '',
+      note: null
+    };
+  }
+
+  /**
+   * Submit a new comment
+   */
+  submitComment(event: Event) {
+    event.preventDefault();
+    
+    const p = this.patrimoine();
+    if (!p || !this.newComment.nom.trim() || !this.newComment.message.trim()) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    const comment: Commentaire = {
+      id: `c-${p.id}-${Date.now()}`,
+      nom: this.newComment.nom.trim(),
+      message: this.newComment.message.trim(),
+      date: new Date().toISOString().split('T')[0],
+      note: this.newComment.note || undefined,
+      etat: 'pending'
+    };
+
+    // Add to the first monument's comments (as we show aggregated comments from all monuments)
+    // In a real scenario, you might want to let the user choose which monument to comment on
+    if (p.monuments && p.monuments.length > 0) {
+      p.monuments[0].comments = p.monuments[0].comments || [];
+      p.monuments[0].comments.push(comment);
+    } else {
+      // If no monuments, add to patrimoine itself
+      p.comments = p.comments || [];
+      p.comments.push(comment);
+    }
+
+    // Update via service
+    this.service.updatePatrimoine(p.id, p).subscribe({
+      next: () => {
+        alert('Commentaire soumis pour modération !');
+        this.resetCommentForm();
+        this.showCommentForm.set(false);
+        // Refresh data
+        this.service.getById(p.id).subscribe(updated => {
+          this.patrimoine.set(updated);
+        });
+      },
+      error: (err) => {
+        console.error('Error submitting comment:', err);
+        alert('Erreur lors de la soumission du commentaire');
+      }
+    });
   }
 }

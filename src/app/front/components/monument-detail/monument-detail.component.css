@@ -366,3 +366,128 @@
     font-size: 1.35rem;
   }
 }
+
+/* Comment Form Styles */
+.comment-actions {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.btn-add-comment {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-comment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.comment-form-container {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.comment-form .form-group {
+  margin-bottom: 20px;
+}
+
+.comment-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.comment-form .required {
+  color: #f87171;
+}
+
+.comment-form input,
+.comment-form textarea,
+.comment-form select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.comment-form input:focus,
+.comment-form textarea:focus,
+.comment-form select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.comment-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cancel {
+  background: rgba(71, 85, 105, 0.4);
+  color: #cbd5e1;
+}
+
+.btn-cancel:hover {
+  background: rgba(71, 85, 105, 0.6);
+}
+
+.comment.pending {
+  opacity: 0.6;
+  filter: blur(0.5px);
+  background: rgba(251, 191, 36, 0.05);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.comment .status.pending {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
