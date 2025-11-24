@@ -21,15 +21,15 @@
         </a>
       </li>
       @if (isAuthenticated()) {
-        <li>
-          <a routerLink="/admin" [class.active]="isActive('/admin')">
-            <span>Dashboard</span>
-          </a>
-        </li>
+      <li>
+        <a routerLink="/admin" [class.active]="isActive('/admin')">
+          <span>Dashboard</span>
+        </a>
+      </li>
       } @else {
-        <li>
-          <span class="disabled">Dashboard</span>
-        </li>
+      <li>
+        <span class="disabled">Dashboard</span>
+      </li>
       }
     </ul>
     <div class="actions">
@@ -40,19 +40,19 @@
         [attr.aria-label]="'Basculer thème ' + theme()"
       >
         @if (theme() === 'dark') {
-          <svg viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M12 3a9 9 0 0 0 0 18 9 9 0 0 0 0-18Zm0 2a7 7 0 0 1 0 14 7 7 0 0 1 0-14Z"
-            />
-          </svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M12 3a9 9 0 0 0 0 18 9 9 0 0 0 0-18Zm0 2a7 7 0 0 1 0 14 7 7 0 0 1 0-14Z"
+          />
+        </svg>
         } @else {
-          <svg viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M6.995 12a5 5 0 0 1 4.47-4.966 7 7 0 1 0 6.504 6.504A5 5 0 0 1 6.995 12Z"
-            />
-          </svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M6.995 12a5 5 0 0 1 4.47-4.966 7 7 0 1 0 6.504 6.504A5 5 0 0 1 6.995 12Z"
+          />
+        </svg>
         }
       </button>
       <a
@@ -63,23 +63,6 @@
       >
         Favoris
       </a>
-      @if (!isAuthenticated()) {
-        <a
-          class="ghost"
-          routerLink="/login"
-          title="Connexion administrateur"
-        >
-          Admin
-        </a>
-      } @else {
-        <button
-          class="ghost"
-          (click)="logout()"
-          title="Déconnexion"
-        >
-          Logout
-        </button>
-      }
     </div>
   </div>
 </nav>

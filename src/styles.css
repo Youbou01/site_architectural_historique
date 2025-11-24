@@ -2,20 +2,27 @@
 
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-html,
-body {
+html {
   height: 100%;
 }
 
 body {
   margin: 0;
+  padding: 0;
   font-family: system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: #060b12;
   color: #e2e8f0;
-  /* Flexbox layout for sticky footer */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+}
+
+#root,
+app-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
 }
 
 /* Design tokens */
@@ -31,16 +38,6 @@ body {
   --shadow-sm: 0 2px 4px -2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 8px 28px -6px rgba(0, 0, 0, 0.55);
-}
-
-/* Main content area should expand to fill available space */
-main {
-  flex: 1 0 auto;
-}
-
-/* Footer should stick to bottom */
-.site-footer {
-  flex-shrink: 0;
 }
 
 .card-surface {
@@ -86,18 +83,9 @@ main {
   }
 }
 
-footer.site-footer {
-  margin-top: 4rem;
-  padding: 2.5rem 0 3rem;
-  background: var(--surface-2);
-  color: #94a3b8;
-}
-
-footer.site-footer a {
-  color: #e2e8f0;
-  text-decoration: none;
-}
-
-footer.site-footer a:hover {
-  color: var(--accent);
+/* Critical: Ensure footer stays at bottom */
+app-footer {
+  margin-top: auto;
+  display: block;
+  width: 100%;
 }

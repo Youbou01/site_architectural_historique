@@ -10,8 +10,8 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-site-crud',
   templateUrl: './site-crud.html',
-  imports: [RouterLink, FormsModule, CommonModule],
-  styleUrls: ['./site-crud.css']
+  imports: [FormsModule, CommonModule],
+  styleUrls: ['./site-crud.css'],
 })
 export class SiteCrudComponent implements OnInit {
   sites: SiteHistorique[] = [];
@@ -39,7 +39,7 @@ export class SiteCrudComponent implements OnInit {
     visitesGuideesDisponibles: false,
     lieuxProches: '',
     latitude: 0,
-    longitude: 0
+    longitude: 0,
   };
 
   monumentFormData = {
@@ -57,7 +57,7 @@ export class SiteCrudComponent implements OnInit {
     ouvert: true,
     visitesGuideesDisponibles: false,
     latitude: 0,
-    longitude: 0
+    longitude: 0,
   };
 
   constructor(
@@ -71,38 +71,48 @@ export class SiteCrudComponent implements OnInit {
   }
 
   load(): void {
-    this.patrimoineService.patrimoines.set([]);
+    // Trigger load if cache is empty
     this.patrimoineService.loadAll();
 
-    const checkData = setInterval(() => {
-      const sites = this.patrimoineService.patrimoines();
-      if (sites.length > 0) {
-        clearInterval(checkData);
-        this.sites = sites;
-      }
-    }, 100);
+    // Use signal directly - it will update when data loads
+    const sites = this.patrimoineService.patrimoines();
 
-    setTimeout(() => {
-      clearInterval(checkData);
-      this.sites = this.patrimoineService.patrimoines();
-    }, 5000);
+    if (sites.length > 0) {
+      // Data already loaded (from cache)
+      this.sites = sites;
+    } else {
+      // Wait for data to load
+      const checkData = setInterval(() => {
+        const currentSites = this.patrimoineService.patrimoines();
+        if (currentSites.length > 0) {
+          clearInterval(checkData);
+          this.sites = currentSites;
+        }
+      }, 100);
+
+      // Timeout fallback after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkData);
+        this.sites = this.patrimoineService.patrimoines();
+      }, 5000);
+    }
   }
 
   getCategories(): string[] {
     const categoriesSet = new Set<string>();
-    this.sites.forEach(site => {
-      site.categories.forEach(cat => categoriesSet.add(cat));
+    this.sites.forEach((site) => {
+      site.categories.forEach((cat) => categoriesSet.add(cat));
     });
     return Array.from(categoriesSet).sort();
   }
 
   filteredSites(): SiteHistorique[] {
     return this.sites.filter((s: SiteHistorique) => {
-      const matchesSearch = !this.searchTerm ||
+      const matchesSearch =
+        !this.searchTerm ||
         s.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (s.localisation || '').toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesCategory = !this.filterCategory ||
-        s.categories.includes(this.filterCategory);
+      const matchesCategory = !this.filterCategory || s.categories.includes(this.filterCategory);
       return matchesSearch && matchesCategory;
     });
   }
@@ -125,12 +135,12 @@ export class SiteCrudComponent implements OnInit {
       'Site archéologique': 'archeologique',
       'Infrastructure romaine': 'romaine',
       'Ville historique': 'historique',
-      'Médina': 'medina',
+      Médina: 'medina',
       'Patrimoine immatériel': 'immateriel',
       'Parc naturel': 'naturel',
       'Site historique': 'historique',
       'Ville religieuse': 'religieux',
-      'Île culturelle': 'culturelle'
+      'Île culturelle': 'culturelle',
     };
     return map[category] || 'autre';
   }
@@ -164,7 +174,7 @@ export class SiteCrudComponent implements OnInit {
         .map((l: LieuProche) => `${l.nom}|${l.type}|${l.distanceKm || 0}`)
         .join('; '),
       latitude: site.latitude || 0,
-      longitude: site.longitude || 0
+      longitude: site.longitude || 0,
     };
     this.showForm = true;
   }
@@ -183,7 +193,7 @@ export class SiteCrudComponent implements OnInit {
       visitesGuideesDisponibles: false,
       lieuxProches: '',
       latitude: 0,
-      longitude: 0
+      longitude: 0,
     };
   }
 
@@ -194,18 +204,24 @@ export class SiteCrudComponent implements OnInit {
     }
 
     const horairesArray = this.formData.horaires
-      ? this.formData.horaires.split(',').map(h => h.trim()).filter(h => h)
+      ? this.formData.horaires
+          .split(',')
+          .map((h) => h.trim())
+          .filter((h) => h)
       : [];
 
     const lieuxProchesArray: LieuProche[] = this.formData.lieuxProches
-      ? this.formData.lieuxProches.split(';').map(lp => {
-          const parts = lp.trim().split('|');
-          return {
-            nom: parts[0] || '',
-            type: parts[1] || '',
-            distanceKm: parseFloat(parts[2]) || 0
-          };
-        }).filter(lp => lp.nom)
+      ? this.formData.lieuxProches
+          .split(';')
+          .map((lp) => {
+            const parts = lp.trim().split('|');
+            return {
+              nom: parts[0] || '',
+              type: parts[1] || '',
+              distanceKm: parseFloat(parts[2]) || 0,
+            };
+          })
+          .filter((lp) => lp.nom)
       : [];
 
     const siteData: Partial<SiteHistorique> = {
@@ -228,9 +244,9 @@ export class SiteCrudComponent implements OnInit {
       stats: {
         vues: 0,
         favoris: 0,
-        noteMoyenne: 0
+        noteMoyenne: 0,
       },
-      monuments: []
+      monuments: [],
     };
 
     if (this.editingId) {
@@ -243,7 +259,7 @@ export class SiteCrudComponent implements OnInit {
         error: (err) => {
           console.error('Error updating site:', err);
           alert('Failed to update site. Please try again.');
-        }
+        },
       });
     } else {
       this.patrimoineService.addPatrimoine(siteData).subscribe({
@@ -255,7 +271,7 @@ export class SiteCrudComponent implements OnInit {
         error: (err) => {
           console.error('Error adding site:', err);
           alert('Failed to add site. Please try again.');
-        }
+        },
       });
     }
   }
@@ -275,7 +291,7 @@ export class SiteCrudComponent implements OnInit {
       error: (err) => {
         console.error('Error deleting site:', err);
         alert('Failed to delete site. Please try again.');
-      }
+      },
     });
   }
 
@@ -315,7 +331,7 @@ export class SiteCrudComponent implements OnInit {
       ouvert: monument.ouvert !== false,
       visitesGuideesDisponibles: monument.visitesGuideesDisponibles || false,
       latitude: monument.latitude || 0,
-      longitude: monument.longitude || 0
+      longitude: monument.longitude || 0,
     };
     this.showMonumentForm = true;
   }
@@ -336,7 +352,7 @@ export class SiteCrudComponent implements OnInit {
       ouvert: true,
       visitesGuideesDisponibles: false,
       latitude: 0,
-      longitude: 0
+      longitude: 0,
     };
   }
 
@@ -352,26 +368,38 @@ export class SiteCrudComponent implements OnInit {
     }
 
     const categoriesArray = this.monumentFormData.categories
-      ? this.monumentFormData.categories.split(',').map(c => c.trim()).filter(c => c)
+      ? this.monumentFormData.categories
+          .split(',')
+          .map((c) => c.trim())
+          .filter((c) => c)
       : [];
 
     const photosArray = this.monumentFormData.photos
-      ? this.monumentFormData.photos.split(',').map(p => p.trim()).filter(p => p)
+      ? this.monumentFormData.photos
+          .split(',')
+          .map((p) => p.trim())
+          .filter((p) => p)
       : [];
 
     const horairesArray = this.monumentFormData.horaires
-      ? this.monumentFormData.horaires.split(',').map(h => h.trim()).filter(h => h)
+      ? this.monumentFormData.horaires
+          .split(',')
+          .map((h) => h.trim())
+          .filter((h) => h)
       : [];
 
     const lieuxProchesArray: LieuProche[] = this.monumentFormData.lieuxProches
-      ? this.monumentFormData.lieuxProches.split(';').map(lp => {
-          const parts = lp.trim().split('|');
-          return {
-            nom: parts[0] || '',
-            type: parts[1] || '',
-            distanceKm: parseFloat(parts[2]) || 0
-          };
-        }).filter(lp => lp.nom)
+      ? this.monumentFormData.lieuxProches
+          .split(';')
+          .map((lp) => {
+            const parts = lp.trim().split('|');
+            return {
+              nom: parts[0] || '',
+              type: parts[1] || '',
+              distanceKm: parseFloat(parts[2]) || 0,
+            };
+          })
+          .filter((lp) => lp.nom)
       : [];
 
     const monumentData: SiteHistorique = {
@@ -397,15 +425,15 @@ export class SiteCrudComponent implements OnInit {
       stats: {
         vues: 0,
         favoris: 0,
-        noteMoyenne: 0
-      }
+        noteMoyenne: 0,
+      },
     };
 
     // Update or add monument to the site's monuments array
     let updatedMonuments: SiteHistorique[] = [...(this.selectedSite.monuments || [])];
 
     if (this.editingMonumentId) {
-      const index = updatedMonuments.findIndex(m => m.id === this.editingMonumentId);
+      const index = updatedMonuments.findIndex((m) => m.id === this.editingMonumentId);
       if (index !== -1) {
         updatedMonuments[index] = monumentData;
       }
@@ -416,17 +444,19 @@ export class SiteCrudComponent implements OnInit {
     // Update the site with the new monuments array
     const updatedSite: Partial<SiteHistorique> = {
       ...this.selectedSite,
-      monuments: updatedMonuments
+      monuments: updatedMonuments,
     };
 
     this.patrimoineService.updatePatrimoine(this.selectedSite.id, updatedSite).subscribe({
       next: () => {
-        alert(this.editingMonumentId ? 'Monument updated successfully!' : 'Monument added successfully!');
+        alert(
+          this.editingMonumentId ? 'Monument updated successfully!' : 'Monument added successfully!'
+        );
         this.showMonumentForm = false;
         this.load();
         // Refresh selected site
         setTimeout(() => {
-          const refreshedSite = this.sites.find(s => s.id === this.selectedSite?.id);
+          const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
           if (refreshedSite) {
             this.selectedSite = refreshedSite;
           }
@@ -435,7 +465,7 @@ export class SiteCrudComponent implements OnInit {
       error: (err) => {
         console.error('Error saving monument:', err);
         alert('Failed to save monument. Please try again.');
-      }
+      },
     });
   }
 
@@ -449,11 +479,13 @@ export class SiteCrudComponent implements OnInit {
 
     if (!this.selectedSite) return;
 
-    const updatedMonuments: SiteHistorique[] = (this.selectedSite.monuments || []).filter(m => m.id !== monumentId);
+    const updatedMonuments: SiteHistorique[] = (this.selectedSite.monuments || []).filter(
+      (m) => m.id !== monumentId
+    );
 
     const updatedSite: Partial<SiteHistorique> = {
       ...this.selectedSite,
-      monuments: updatedMonuments
+      monuments: updatedMonuments,
     };
 
     this.patrimoineService.updatePatrimoine(this.selectedSite.id, updatedSite).subscribe({
@@ -462,7 +494,7 @@ export class SiteCrudComponent implements OnInit {
         this.load();
         // Refresh selected site
         setTimeout(() => {
-          const refreshedSite = this.sites.find(s => s.id === this.selectedSite?.id);
+          const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
           if (refreshedSite) {
             this.selectedSite = refreshedSite;
           }
@@ -471,7 +503,7 @@ export class SiteCrudComponent implements OnInit {
       error: (err) => {
         console.error('Error deleting monument:', err);
         alert('Failed to delete monument. Please try again.');
-      }
+      },
     });
   }
 

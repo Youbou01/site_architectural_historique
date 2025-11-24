@@ -15,7 +15,7 @@ interface StatsSummary {
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   imports: [DecimalPipe],
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
 })
 export class DashboardComponent implements OnInit {
   stats: StatsSummary | null = null;
@@ -30,29 +30,37 @@ export class DashboardComponent implements OnInit {
   loadStats() {
     this.isLoading = true;
 
-    // FIXED: Force reload and wait for data with interval
-    this.patrimoineService.patrimoines.set([]);
+    // Trigger load if cache is empty
     this.patrimoineService.loadAll();
 
-    // FIXED: Check data availability with interval instead of setTimeout
-    const checkData = setInterval(() => {
-      const sites = this.patrimoineService.patrimoines();
-      if (sites.length > 0) {
-        clearInterval(checkData);
-        this.stats = this.calculateStats(sites);
-        this.isLoading = false;
-      }
-    }, 100);
+    // Use signal directly - it will update when data loads
+    const sites = this.patrimoineService.patrimoines();
 
-    // Timeout fallback after 5 seconds
-    setTimeout(() => {
-      clearInterval(checkData);
-      if (this.isLoading) {
-        const sites = this.patrimoineService.patrimoines();
-        this.stats = this.calculateStats(sites);
-        this.isLoading = false;
-      }
-    }, 5000);
+    if (sites.length > 0) {
+      // Data already loaded (from cache)
+      this.stats = this.calculateStats(sites);
+      this.isLoading = false;
+    } else {
+      // Wait for data to load
+      const checkData = setInterval(() => {
+        const currentSites = this.patrimoineService.patrimoines();
+        if (currentSites.length > 0) {
+          clearInterval(checkData);
+          this.stats = this.calculateStats(currentSites);
+          this.isLoading = false;
+        }
+      }, 100);
+
+      // Timeout fallback after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkData);
+        if (this.isLoading) {
+          const currentSites = this.patrimoineService.patrimoines();
+          this.stats = this.calculateStats(currentSites);
+          this.isLoading = false;
+        }
+      }, 5000);
+    }
   }
 
   private calculateStats(sites: SiteHistorique[]): StatsSummary {
@@ -71,12 +79,12 @@ export class DashboardComponent implements OnInit {
       totalMonuments += (site.monuments || []).length;
 
       // Add monument comments
-      (site.monuments || []).forEach(monument => {
+      (site.monuments || []).forEach((monument) => {
         const monumentComments = monument.comments || [];
         totalComments += monumentComments.length;
 
         // Include monument ratings
-        monumentComments.forEach(c => {
+        monumentComments.forEach((c) => {
           if (typeof c.note === 'number') {
             ratingSum += c.note;
             ratingCount++;
@@ -85,7 +93,7 @@ export class DashboardComponent implements OnInit {
       });
 
       // Count site ratings
-      siteComments.forEach(c => {
+      siteComments.forEach((c) => {
         if (typeof c.note === 'number') {
           ratingSum += c.note;
           ratingCount++;
@@ -105,7 +113,7 @@ export class DashboardComponent implements OnInit {
         );
         return {
           site: s,
-          comments: siteCommentsCount + monumentCommentsCount
+          comments: siteCommentsCount + monumentCommentsCount,
         };
       })
       .sort((a, b) => b.comments - a.comments)
@@ -116,7 +124,7 @@ export class DashboardComponent implements OnInit {
       totalMonuments,
       totalComments,
       avgRating,
-      topSitesByComments
+      topSitesByComments,
     };
   }
 }

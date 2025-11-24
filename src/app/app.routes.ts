@@ -12,7 +12,6 @@ import { SiteCrudComponent } from './back/admin/pages/site-crud/site-crud';
 import { SiteEditComponent } from './back/admin/pages/site-edit/site-edit';
 import { CommentsModerationComponent } from './back/admin/pages/comments-moderation/comments-moderation';
 import { ChangePasswordComponent } from './back/admin/pages/change-password/change-password';
-import { UserManagementComponent } from './back/admin/pages/user-management/user-management';
 import { AdminLayout } from './back/admin/admin-layout/admin-layout';
 import { AuthGuard } from './back/core/guards/auth-guard';
 import { AdminGuard } from './back/core/guards/admin-guard';
@@ -39,11 +38,10 @@ export const routes: Routes = [
       { path: 'site-edit', component: SiteEditComponent },
       { path: 'site-edit/:id', component: SiteEditComponent },
       { path: 'comments-moderation', component: CommentsModerationComponent },
-      { path: 'user-management', component: UserManagementComponent },
-      { path: 'change-password', component: ChangePasswordComponent }
-    ]
+      { path: 'change-password', component: ChangePasswordComponent },
+    ],
   },
 
   // Wildcard redirect
-  { path: '**', redirectTo: 'patrimoines' }
+  { path: '**', redirectTo: 'patrimoines' },
 ];

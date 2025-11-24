@@ -13,13 +13,14 @@ interface PasswordRequirement {
   selector: 'app-change-password',
   imports: [FormsModule, CommonModule],
   templateUrl: './change-password.html',
-  styleUrls: ['./change-password.css']
+  styleUrls: ['./change-password.css'],
 })
 export class ChangePasswordComponent {
   oldPassword = '';
   newPassword = '';
   confirmPassword = '';
   message = '';
+  messageType: 'success' | 'error' | '' = '';
   isLoading = false;
 
   showOldPassword = false;
@@ -49,60 +50,71 @@ export class ChangePasswordComponent {
       {
         id: 'length',
         text: 'At least 6 characters',
-        met: this.newPassword.length >= 6
+        met: this.newPassword.length >= 6,
       },
       {
         id: 'number',
         text: 'Contains a number',
-        met: this.hasNumber(this.newPassword)
+        met: this.hasNumber(this.newPassword),
       },
       {
         id: 'uppercase',
         text: 'Contains an uppercase letter',
-        met: this.hasUppercase(this.newPassword)
-      }
+        met: this.hasUppercase(this.newPassword),
+      },
     ];
   }
 
-  updatePassword(): boolean {
+  updatePassword(): void {
     if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
       this.message = 'Please fill all fields';
-      return false;
+      this.messageType = 'error';
+      return;
     }
 
     if (this.newPassword !== this.confirmPassword) {
       this.message = 'New passwords do not match';
-      return false;
+      this.messageType = 'error';
+      return;
     }
 
     if (!this.isPasswordValid()) {
       this.message = 'Password does not meet requirements';
-      return false;
+      this.messageType = 'error';
+      return;
     }
 
     const user = this.auth.getUser();
     if (!user) {
       this.message = 'User not authenticated';
-      return false;
+      this.messageType = 'error';
+      return;
     }
 
     this.isLoading = true;
     this.message = '';
+    this.messageType = '';
 
     this.auth.changePassword(user.id, this.oldPassword, this.newPassword).subscribe({
       next: () => {
+        this.isLoading = false;
         this.message = 'Password updated successfully!';
+        this.messageType = 'success';
         this.oldPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
-        this.isLoading = false;
+
+        // Auto-clear success message after 5 seconds
+        setTimeout(() => {
+          this.message = '';
+          this.messageType = '';
+        }, 5000);
       },
       error: (err) => {
-        this.message = 'Error: ' + (err.message || 'Failed to update password');
         this.isLoading = false;
-      }
+        this.message = err.error?.message || err.message || 'Failed to update password';
+        this.messageType = 'error';
+      },
     });
-
-    return true;
   }
 }

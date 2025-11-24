@@ -1,23 +1,22 @@
 import { Injectable, signal, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { UtilisateurAdmin } from '../models/utilisateur-admin.model';
-import { Utilisateur } from '../models/utilisateur';
+import { Admin } from '../models/admin';
 import { Observable, switchMap, tap, from, catchError, throwError } from 'rxjs';
 
-type CurrentUser = UtilisateurAdmin | Utilisateur;
+type CurrentUser = Admin;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Auth {
   private baseAdmins = 'http://localhost:3000/admins';
-  private baseUsers = 'http://localhost:3000/users';
+
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
 
   user = signal<CurrentUser | null>(null);
-  userType = signal<'admin' | 'user' | null>(null);
+  userType = signal<'admin' | null>(null);
 
   constructor(private http: HttpClient) {
     // Charger uniquement côté navigateur
@@ -32,7 +31,7 @@ export class Auth {
       const type = localStorage.getItem('auth_type');
       if (raw && type) {
         this.user.set(JSON.parse(raw));
-        this.userType.set(type as 'admin' | 'user');
+        this.userType.set(type as 'admin');
       }
     } catch (error) {
       console.warn('Failed to load auth from storage:', error);
@@ -40,7 +39,7 @@ export class Auth {
     }
   }
 
-  private saveToStorage(user: CurrentUser, type: 'admin' | 'user') {
+  private saveToStorage(user: CurrentUser, type: 'admin') {
     if (!this.isBrowser) return;
 
     try {
@@ -62,11 +61,9 @@ export class Auth {
     }
   }
 
-  login(username: string, password: string, isAdmin: boolean = false): Observable<CurrentUser> {
-    const baseUrl = isAdmin ? this.baseAdmins : this.baseUsers;
-
+  login(username: string, password: string): Observable<CurrentUser> {
     return this.http
-      .get<CurrentUser[]>(`${baseUrl}?username=${encodeURIComponent(username)}`)
+      .get<CurrentUser[]>(`${this.baseAdmins}?username=${encodeURIComponent(username)}`)
       .pipe(
         switchMap((list: CurrentUser[]) => {
           if (!Array.isArray(list) || list.length === 0) {
@@ -75,74 +72,28 @@ export class Auth {
 
           const u = list[0];
 
-          if (password !== u.password) {
+          if (password !== u.passwordHash) {
             throw new Error('Mot de passe incorrect');
-          }
-
-          if (!u.isActive) {
-            throw new Error('Compte désactivé');
           }
 
           const updatedUser: CurrentUser = {
             ...u,
-            dernierLogin: new Date().toISOString()
+            dernierLogin: new Date().toISOString(),
           };
 
           this.user.set(updatedUser);
-          this.userType.set(isAdmin ? 'admin' : 'user');
-          this.saveToStorage(updatedUser, isAdmin ? 'admin' : 'user');
+          this.userType.set('admin');
+          this.saveToStorage(updatedUser, 'admin');
 
           // Mise à jour du dernierLogin dans la base
-          this.http.put(`${baseUrl}/${u.id}`, updatedUser).subscribe({
+          this.http.put(`${this.baseAdmins}/${u.id}`, updatedUser).subscribe({
             next: () => {},
-            error: (err) => console.warn("Erreur update JSON-server", err)
+            error: (err) => console.warn('Erreur update JSON-server', err),
           });
 
           return from(Promise.resolve(updatedUser));
         })
       );
-  }
-
-  register(data: {
-    username: string;
-    email: string;
-    password: string;
-    fullName: string;
-    phone?: string;
-  }): Observable<Utilisateur> {
-    return this.http.get<Utilisateur[]>(`${this.baseUsers}?username=${encodeURIComponent(data.username)}`).pipe(
-      switchMap((existing) => {
-        if (existing.length > 0) {
-          return throwError(() => new Error('Ce nom d\'utilisateur existe déjà'));
-        }
-
-        return this.http.get<Utilisateur[]>(`${this.baseUsers}?email=${encodeURIComponent(data.email)}`);
-      }),
-      switchMap((existing) => {
-        if (existing.length > 0) {
-          return throwError(() => new Error('Cet email est déjà utilisé'));
-        }
-
-        const newUser: Partial<Utilisateur> = {
-          username: data.username,
-          email: data.email,
-          password: data.password,
-          fullName: data.fullName,
-          phone: data.phone || '',
-          avatar: `https://i.pravatar.cc/150?u=${data.username}`,
-          dateCreated: new Date().toISOString(),
-          dernierLogin: null,
-          isActive: true,
-          favorites: []
-        };
-
-        return this.http.post<Utilisateur>(this.baseUsers, newUser);
-      }),
-      catchError(err => {
-        console.error('Registration error:', err);
-        return throwError(() => err);
-      })
-    );
   }
 
   logout(): void {
@@ -159,39 +110,37 @@ export class Auth {
     return this.userType() === 'admin';
   }
 
-  isUser(): boolean {
-    return this.userType() === 'user';
-  }
-
   getUser(): CurrentUser | null {
     return this.user();
   }
 
-  getUserType(): 'admin' | 'user' | null {
+  getUserType(): 'admin' | null {
     return this.userType();
   }
 
-  changePassword(userId: string, oldPassword: string, newPassword: string): Observable<CurrentUser> {
-    const baseUrl = this.isAdmin() ? this.baseAdmins : this.baseUsers;
-
-    return this.http.get<CurrentUser>(`${baseUrl}/${userId}`).pipe(
+  changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string
+  ): Observable<CurrentUser> {
+    return this.http.get<CurrentUser>(`${this.baseAdmins}/${userId}`).pipe(
       switchMap((u) => {
         if (!u) throw new Error('Utilisateur introuvable');
 
-        if (oldPassword !== u.password) {
+        if (oldPassword !== u.passwordHash) {
           throw new Error('Ancien mot de passe incorrect');
         }
 
         const updated: CurrentUser = {
           ...u,
-          password: newPassword,
-          dernierLogin: new Date().toISOString()
+          passwordHash: newPassword,
+          dernierLogin: new Date().toISOString(),
         };
 
-        return this.http.put<CurrentUser>(`${baseUrl}/${userId}`, updated).pipe(
-          tap(result => {
+        return this.http.put<CurrentUser>(`${this.baseAdmins}/${userId}`, updated).pipe(
+          tap((result) => {
             this.user.set(result);
-            this.saveToStorage(result, this.userType()!);
+            this.saveToStorage(result, 'admin');
           })
         );
       })

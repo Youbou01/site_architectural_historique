@@ -15,7 +15,7 @@ interface CommentWithSite {
   selector: 'app-comments-moderation',
   templateUrl: './comments-moderation.html',
   imports: [DatePipe, CommonModule, FormsModule],
-  styleUrls: ['./comments-moderation.css']
+  styleUrls: ['./comments-moderation.css'],
 })
 export class CommentsModerationComponent implements OnInit {
   allComments: CommentWithSite[] = [];
@@ -30,27 +30,35 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   loadComments() {
-    // FIXED: Force reload and wait for data with interval
-    this.patrimoineService.patrimoines.set([]);
+    // Trigger load if cache is empty
     this.patrimoineService.loadAll();
 
-    // FIXED: Check data availability with interval
-    const checkData = setInterval(() => {
-      const sites = this.patrimoineService.patrimoines();
-      if (sites.length > 0) {
-        clearInterval(checkData);
-        this.sites = sites;
-        // FIXED: Separate data loading from comment collection
-        this.collectComments();
-      }
-    }, 100);
+    // Use signal directly - it will update when data loads
+    const sites = this.patrimoineService.patrimoines();
 
-    // Timeout fallback after 5 seconds
-    setTimeout(() => {
-      clearInterval(checkData);
-      this.sites = this.patrimoineService.patrimoines();
+    if (sites.length > 0) {
+      // Data already loaded (from cache)
+      this.sites = sites;
       this.collectComments();
-    }, 5000);
+    } else {
+      // Wait for data to load
+      const checkData = setInterval(() => {
+        const currentSites = this.patrimoineService.patrimoines();
+        if (currentSites.length > 0) {
+          clearInterval(checkData);
+          this.sites = currentSites;
+          this.collectComments();
+        }
+      }, 100);
+
+      // Timeout fallback after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkData);
+        const currentSites = this.patrimoineService.patrimoines();
+        this.sites = currentSites;
+        this.collectComments();
+      }, 5000);
+    }
   }
 
   // FIXED: Dedicated method to collect comments
@@ -63,7 +71,7 @@ export class CommentsModerationComponent implements OnInit {
         this.allComments.push({
           comment,
           siteId: site.id,
-          siteName: site.nom
+          siteName: site.nom,
         });
       });
 
@@ -74,7 +82,7 @@ export class CommentsModerationComponent implements OnInit {
             comment,
             // FIXED: Use parent site ID for proper filtering in dropdown
             siteId: site.id,
-            siteName: `${site.nom} - ${monument.nom}`
+            siteName: `${site.nom} - ${monument.nom}`,
           });
         });
       });
@@ -82,23 +90,21 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   filteredComments(): CommentWithSite[] {
-    const statusMap: Record<string, string> = {
-      approved: 'approuvé',
-      rejected: 'rejeté',
-      pending: 'en attente'
-    };
-
-    return this.allComments.filter(item => {
+    return this.allComments.filter((item) => {
       const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
-      
-      // Handle both 'pending' and 'en attente' statuses
-      let matchStatus = true;
+
+      // Handle status matching - support both "en attente" and "pending"
+      let matchStatus = !this.selectedStatus;
       if (this.selectedStatus) {
-        const targetStatus = statusMap[this.selectedStatus];
-        matchStatus = item.comment.etat === targetStatus || 
-                     (this.selectedStatus === 'pending' && item.comment.etat === 'pending');
+        if (this.selectedStatus === 'en attente') {
+          // Match both "en attente" and "pending"
+          matchStatus = item.comment.etat === 'en attente' || item.comment.etat === 'pending';
+        } else {
+          // Direct match for other statuses
+          matchStatus = item.comment.etat === this.selectedStatus;
+        }
       }
-      
+
       return matchSite && matchStatus;
     });
   }
@@ -108,21 +114,21 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   getApprovedCount(): number {
-    return this.allComments.filter(c => c.comment.etat === 'approuvé').length;
+    return this.allComments.filter((c) => c.comment.etat === 'approuvé').length;
   }
 
   getRejectedCount(): number {
-    return this.allComments.filter(c => c.comment.etat === 'rejeté').length;
+    return this.allComments.filter((c) => c.comment.etat === 'rejeté').length;
   }
 
   getPendingCount(): number {
-    return this.allComments.filter(c => 
-      c.comment.etat === 'en attente' || c.comment.etat === 'pending'
+    return this.allComments.filter(
+      (c) => c.comment.etat === 'en attente' || c.comment.etat === 'pending'
     ).length;
   }
 
   getCommentsCountForSite(siteId: string): number {
-    return this.allComments.filter(c => c.siteId === siteId).length;
+    return this.allComments.filter((c) => c.siteId === siteId).length;
   }
 
   approve(item: CommentWithSite) {
@@ -138,14 +144,14 @@ export class CommentsModerationComponent implements OnInit {
   delete(item: CommentWithSite) {
     if (!confirm('Supprimer ce commentaire ?')) return;
 
-    const site = this.sites.find(s => s.id === item.siteId);
+    const site = this.sites.find((s) => s.id === item.siteId);
     if (!site) {
       console.error('Site not found');
       return;
     }
 
     // Remove from site comments
-    const siteCommentIndex = site.comments.findIndex(c => c.id === item.comment.id);
+    const siteCommentIndex = site.comments.findIndex((c) => c.id === item.comment.id);
     if (siteCommentIndex !== -1) {
       site.comments.splice(siteCommentIndex, 1);
       this.updateSiteInDb(site);
@@ -154,7 +160,7 @@ export class CommentsModerationComponent implements OnInit {
 
     // Remove from monument comments
     for (const monument of site.monuments || []) {
-      const monumentCommentIndex = monument.comments.findIndex(c => c.id === item.comment.id);
+      const monumentCommentIndex = monument.comments.findIndex((c) => c.id === item.comment.id);
       if (monumentCommentIndex !== -1) {
         monument.comments.splice(monumentCommentIndex, 1);
         this.updateSiteInDb(site);
@@ -164,14 +170,14 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   private updateCommentInDb(item: CommentWithSite) {
-    const site = this.sites.find(s => s.id === item.siteId);
+    const site = this.sites.find((s) => s.id === item.siteId);
     if (!site) {
       console.error('Site not found');
       return;
     }
 
     // Update in site comments
-    const siteComment = site.comments.find(c => c.id === item.comment.id);
+    const siteComment = site.comments.find((c) => c.id === item.comment.id);
     if (siteComment) {
       siteComment.etat = item.comment.etat;
       this.updateSiteInDb(site);
@@ -180,7 +186,7 @@ export class CommentsModerationComponent implements OnInit {
 
     // Update in monument comments
     for (const monument of site.monuments || []) {
-      const monumentComment = monument.comments.find(c => c.id === item.comment.id);
+      const monumentComment = monument.comments.find((c) => c.id === item.comment.id);
       if (monumentComment) {
         monumentComment.etat = item.comment.etat;
         this.updateSiteInDb(site);
@@ -199,27 +205,35 @@ export class CommentsModerationComponent implements OnInit {
         console.error('Error updating site:', err);
         alert('Erreur lors de la mise à jour du commentaire');
         this.loadComments();
-      }
+      },
     });
   }
 
   getStatusBadge(etat: EtatCommentaire | 'pending'): string {
-    switch(etat) {
-      case 'approuvé': return 'Approved';
-      case 'rejeté': return 'Rejected';
+    switch (etat) {
+      case 'approuvé':
+        return 'Approved';
+      case 'rejeté':
+        return 'Rejected';
       case 'en attente':
-      case 'pending': return 'Pending';
-      default: return 'Unknown';
+      case 'pending':
+        return 'Pending';
+      default:
+        return 'Unknown';
     }
   }
 
   getStatusClass(etat: EtatCommentaire | 'pending'): string {
-    switch(etat) {
-      case 'approuvé': return 'badge-success';
-      case 'rejeté': return 'badge-danger';
+    switch (etat) {
+      case 'approuvé':
+        return 'badge-success';
+      case 'rejeté':
+        return 'badge-danger';
       case 'en attente':
-      case 'pending': return 'badge-warning';
-      default: return 'badge-secondary';
+      case 'pending':
+        return 'badge-warning';
+      default:
+        return 'badge-secondary';
     }
   }
 }

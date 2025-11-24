@@ -41,7 +41,7 @@ export class LoginComponent {
     this.message = '';
 
     // Always login as admin
-    this.auth.login(this.loginData.username, this.loginData.password, true)
+    this.auth.login(this.loginData.username, this.loginData.password)
     .subscribe({
       next: (user) => {
         this.message = 'Connexion réussie !';
