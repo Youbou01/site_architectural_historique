@@ -1,9 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PatrimoineService } from '../../../services/patrimoine.service';
 import { FavoritesService } from '../../../services/favorites.service';
 import { SiteHistorique } from '../../../models/site-historique';
+import { Commentaire } from '../../../models/commentaire.model';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -36,6 +38,7 @@ import { getInitials } from '../../utils/common.utils';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     CarouselComponent,
     SafeUrlPipe,
@@ -70,6 +73,14 @@ export class MonumentDetailComponent {
   error = signal<string | null>(null);            // Message d'erreur éventuel
   monument = signal<SiteHistorique | null>(null); // Monument actuellement affiché
   parentId = signal<string | null>(null);         // ID du patrimoine parent
+  showCommentForm = signal(false);                // Affichage du formulaire de commentaire
+
+  // New comment data
+  newComment = {
+    nom: '',
+    message: '',
+    note: null as number | null
+  };
 
   /**
    * Calcul dérivé: note moyenne des commentaires du monument.
@@ -227,5 +238,84 @@ export class MonumentDetailComponent {
    */
   toggleFavoriteMonument() {
     this.favorites.toggleMonument(this.parentId(), this.monument());
+  }
+
+  /**
+   * Toggle the comment form visibility
+   */
+  toggleCommentForm() {
+    this.showCommentForm.set(!this.showCommentForm());
+    if (!this.showCommentForm()) {
+      this.resetCommentForm();
+    }
+  }
+
+  /**
+   * Reset the comment form
+   */
+  resetCommentForm() {
+    this.newComment = {
+      nom: '',
+      message: '',
+      note: null
+    };
+  }
+
+  /**
+   * Submit a new comment
+   */
+  submitComment(event: Event) {
+    event.preventDefault();
+    
+    const m = this.monument();
+    const pId = this.parentId();
+    
+    if (!m || !pId || !this.newComment.nom.trim() || !this.newComment.message.trim()) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    const comment: Commentaire = {
+      id: `c-${m.id}-${Date.now()}`,
+      nom: this.newComment.nom.trim(),
+      message: this.newComment.message.trim(),
+      date: new Date().toISOString().split('T')[0],
+      note: this.newComment.note || undefined,
+      etat: 'pending'
+    };
+
+    // Add comment to monument
+    m.comments = m.comments || [];
+    m.comments.push(comment);
+
+    // Get the parent patrimoine and update it
+    this.service.getById(pId).subscribe({
+      next: (patrimoine) => {
+        // Find and update the monument in the patrimoine
+        const monumentIndex = patrimoine.monuments.findIndex(mon => mon.id === m.id);
+        if (monumentIndex !== -1) {
+          patrimoine.monuments[monumentIndex] = m;
+          
+          // Update the entire patrimoine
+          this.service.updatePatrimoine(pId, patrimoine).subscribe({
+            next: () => {
+              alert('Commentaire soumis pour modération !');
+              this.resetCommentForm();
+              this.showCommentForm.set(false);
+              // Update the local monument signal
+              this.monument.set(m);
+            },
+            error: (err) => {
+              console.error('Error updating patrimoine:', err);
+              alert('Erreur lors de la soumission du commentaire');
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching patrimoine:', err);
+        alert('Erreur lors de la soumission du commentaire');
+      }
+    });
   }
 }

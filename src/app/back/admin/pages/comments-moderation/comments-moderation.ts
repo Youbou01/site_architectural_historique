@@ -90,7 +90,15 @@ export class CommentsModerationComponent implements OnInit {
 
     return this.allComments.filter(item => {
       const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
-      const matchStatus = !this.selectedStatus || item.comment.etat === statusMap[this.selectedStatus];
+      
+      // Handle both 'pending' and 'en attente' statuses
+      let matchStatus = true;
+      if (this.selectedStatus) {
+        const targetStatus = statusMap[this.selectedStatus];
+        matchStatus = item.comment.etat === targetStatus || 
+                     (this.selectedStatus === 'pending' && item.comment.etat === 'pending');
+      }
+      
       return matchSite && matchStatus;
     });
   }
@@ -108,7 +116,9 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   getPendingCount(): number {
-    return this.allComments.filter(c => c.comment.etat === 'en attente').length;
+    return this.allComments.filter(c => 
+      c.comment.etat === 'en attente' || c.comment.etat === 'pending'
+    ).length;
   }
 
   getCommentsCountForSite(siteId: string): number {
@@ -117,68 +127,98 @@ export class CommentsModerationComponent implements OnInit {
 
   approve(item: CommentWithSite) {
     item.comment.etat = 'approuvé';
-    this.updateComment(item);
+    this.updateCommentInDb(item);
   }
 
   reject(item: CommentWithSite) {
     item.comment.etat = 'rejeté';
-    this.updateComment(item);
+    this.updateCommentInDb(item);
   }
 
   delete(item: CommentWithSite) {
     if (!confirm('Supprimer ce commentaire ?')) return;
 
-    // Trouver le site ou monument contenant ce commentaire
-    const site = this.findSiteWithComment(item.siteId);
-    if (site) {
-      // Supprimer le commentaire du site principal
-      site.comments = site.comments.filter(c => c.id !== item.comment.id);
+    const site = this.sites.find(s => s.id === item.siteId);
+    if (!site) {
+      console.error('Site not found');
+      return;
+    }
 
-      // Vérifier aussi dans les monuments
-      site.monuments?.forEach(monument => {
-        if (monument.id === item.siteId) {
-          monument.comments = monument.comments.filter(c => c.id !== item.comment.id);
-        }
-      });
+    // Remove from site comments
+    const siteCommentIndex = site.comments.findIndex(c => c.id === item.comment.id);
+    if (siteCommentIndex !== -1) {
+      site.comments.splice(siteCommentIndex, 1);
+      this.updateSiteInDb(site);
+      return;
+    }
 
-      this.loadComments();
+    // Remove from monument comments
+    for (const monument of site.monuments || []) {
+      const monumentCommentIndex = monument.comments.findIndex(c => c.id === item.comment.id);
+      if (monumentCommentIndex !== -1) {
+        monument.comments.splice(monumentCommentIndex, 1);
+        this.updateSiteInDb(site);
+        return;
+      }
     }
   }
 
-  private updateComment(item: CommentWithSite) {
-    // Recharger les données pour refléter les changements
-    // Note: Dans une vraie application, vous feriez un appel HTTP PUT ici
-    this.loadComments();
-  }
-
-  private findSiteWithComment(siteOrMonumentId: string): SiteHistorique | undefined {
-    // Chercher d'abord parmi les sites principaux
-    let found = this.sites.find(s => s.id === siteOrMonumentId);
-    if (found) return found;
-
-    // Chercher parmi les monuments
-    for (const site of this.sites) {
-      const monument = site.monuments?.find(m => m.id === siteOrMonumentId);
-      if (monument) return site; // Retourner le site parent
+  private updateCommentInDb(item: CommentWithSite) {
+    const site = this.sites.find(s => s.id === item.siteId);
+    if (!site) {
+      console.error('Site not found');
+      return;
     }
 
-    return undefined;
+    // Update in site comments
+    const siteComment = site.comments.find(c => c.id === item.comment.id);
+    if (siteComment) {
+      siteComment.etat = item.comment.etat;
+      this.updateSiteInDb(site);
+      return;
+    }
+
+    // Update in monument comments
+    for (const monument of site.monuments || []) {
+      const monumentComment = monument.comments.find(c => c.id === item.comment.id);
+      if (monumentComment) {
+        monumentComment.etat = item.comment.etat;
+        this.updateSiteInDb(site);
+        return;
+      }
+    }
   }
 
-  getStatusBadge(etat: EtatCommentaire): string {
+  private updateSiteInDb(site: SiteHistorique) {
+    this.patrimoineService.updatePatrimoine(site.id, site).subscribe({
+      next: () => {
+        // Reload to reflect changes
+        this.loadComments();
+      },
+      error: (err) => {
+        console.error('Error updating site:', err);
+        alert('Erreur lors de la mise à jour du commentaire');
+        this.loadComments();
+      }
+    });
+  }
+
+  getStatusBadge(etat: EtatCommentaire | 'pending'): string {
     switch(etat) {
       case 'approuvé': return 'Approved';
       case 'rejeté': return 'Rejected';
-      case 'en attente': return 'Pending';
+      case 'en attente':
+      case 'pending': return 'Pending';
       default: return 'Unknown';
     }
   }
 
-  getStatusClass(etat: EtatCommentaire): string {
+  getStatusClass(etat: EtatCommentaire | 'pending'): string {
     switch(etat) {
       case 'approuvé': return 'badge-success';
       case 'rejeté': return 'badge-danger';
-      case 'en attente': return 'badge-warning';
+      case 'en attente':
+      case 'pending': return 'badge-warning';
       default: return 'badge-secondary';
     }
   }

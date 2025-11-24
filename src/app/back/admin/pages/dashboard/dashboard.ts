@@ -5,6 +5,7 @@ import { DecimalPipe } from '@angular/common';
 
 interface StatsSummary {
   totalSites: number;
+  totalMonuments: number;
   totalComments: number;
   avgRating: number | null;
   topSitesByComments: { site: SiteHistorique; comments: number }[];
@@ -56,6 +57,7 @@ export class DashboardComponent implements OnInit {
 
   private calculateStats(sites: SiteHistorique[]): StatsSummary {
     const totalSites = sites.length;
+    let totalMonuments = 0;
     let totalComments = 0;
     let ratingSum = 0;
     let ratingCount = 0;
@@ -64,6 +66,9 @@ export class DashboardComponent implements OnInit {
       // FIXED: Count comments from both site AND monuments
       const siteComments = site.comments || [];
       totalComments += siteComments.length;
+
+      // Count monuments
+      totalMonuments += (site.monuments || []).length;
 
       // Add monument comments
       (site.monuments || []).forEach(monument => {
@@ -108,6 +113,7 @@ export class DashboardComponent implements OnInit {
 
     return {
       totalSites,
+      totalMonuments,
       totalComments,
       avgRating,
       topSitesByComments
