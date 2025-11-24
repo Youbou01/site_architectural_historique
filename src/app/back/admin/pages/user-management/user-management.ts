@@ -63,17 +63,13 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUsers() {
-    forkJoin({
-      admins: this.http.get<User[]>(this.baseAdmins),
-      users: this.http.get<User[]>(this.baseUsers)
-    }).subscribe({
-      next: (result) => {
-        const admins = result.admins.map(a => ({ ...a, type: 'admin' as const }));
-        const users = result.users.map(u => ({ ...u, type: 'user' as const, role: 'user' }));
-        this.allUsers = [...admins, ...users];
+    // Only load admins
+    this.http.get<User[]>(this.baseAdmins).subscribe({
+      next: (admins) => {
+        this.allUsers = admins.map(a => ({ ...a, type: 'admin' as const }));
         this.applyFilters();
       },
-      error: (err) => console.error('Error loading users:', err)
+      error: (err) => console.error('Error loading admins:', err)
     });
   }
 
@@ -84,8 +80,6 @@ export class UserManagementComponent implements OnInit {
         user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
 
-      const matchRole = !this.filterRole || user.role === this.filterRole;
-
       let matchStatus = true;
       if (this.filterStatus === 'active') {
         matchStatus = user.isActive === true;
@@ -93,7 +87,7 @@ export class UserManagementComponent implements OnInit {
         matchStatus = user.isActive === false;
       }
 
-      return matchSearch && matchRole && matchStatus;
+      return matchSearch && matchStatus;
     });
   }
 
@@ -110,11 +104,11 @@ export class UserManagementComponent implements OnInit {
   }
 
   getTotalAdmins(): number {
-    return this.allUsers.filter(u => u.type === 'admin').length;
+    return this.allUsers.length;
   }
 
   getTotalRegularUsers(): number {
-    return this.allUsers.filter(u => u.type === 'user').length;
+    return 0; // No regular users anymore
   }
 
   openAddForm() {
@@ -130,7 +124,7 @@ export class UserManagementComponent implements OnInit {
       email: user.email,
       password: '',
       fullName: user.fullName,
-      role: user.role || 'user',
+      role: 'admin', // Always admin
       avatar: user.avatar || '',
       phone: user.phone || ''
     };
@@ -143,7 +137,7 @@ export class UserManagementComponent implements OnInit {
       email: '',
       password: '',
       fullName: '',
-      role: 'user',
+      role: 'admin', // Always admin
       avatar: '',
       phone: ''
     };
@@ -159,30 +153,30 @@ export class UserManagementComponent implements OnInit {
       const user = this.allUsers.find(u => u.id === this.editingId);
       if (!user) return;
 
-      const baseUrl = user.type === 'admin' ? this.baseAdmins : this.baseUsers;
       const updated: any = {
         ...user,
         username: this.formData.username,
         email: this.formData.email,
         fullName: this.formData.fullName,
         avatar: this.formData.avatar || `https://i.pravatar.cc/150?u=${this.formData.username}`,
-        phone: this.formData.phone
+        phone: this.formData.phone,
+        role: 'admin'
       };
 
       if (this.formData.password) {
         updated.password = this.formData.password;
       }
 
-      this.http.put(`${baseUrl}/${this.editingId}`, updated).subscribe({
+      this.http.put(`${this.baseAdmins}/${this.editingId}`, updated).subscribe({
         next: () => {
           this.loadUsers();
           this.showForm = false;
         },
-        error: (err) => console.error('Error updating user:', err)
+        error: (err) => console.error('Error updating admin:', err)
       });
     } else {
       if (!this.formData.password) {
-        alert('Password is required for new users');
+        alert('Password is required for new admins');
         return;
       }
 
@@ -195,20 +189,17 @@ export class UserManagementComponent implements OnInit {
         phone: this.formData.phone,
         dateCreated: new Date().toISOString(),
         dernierLogin: null,
-        isActive: true
+        isActive: true,
+        role: 'admin',
+        type: 'admin'
       };
 
-      const baseUrl = this.formData.role === 'admin' ? this.baseAdmins : this.baseUsers;
-      if (this.formData.role === 'admin') {
-        newUser.role = this.formData.role;
-      }
-
-      this.http.post(baseUrl, newUser).subscribe({
+      this.http.post(this.baseAdmins, newUser).subscribe({
         next: () => {
           this.loadUsers();
           this.showForm = false;
         },
-        error: (err) => console.error('Error creating user:', err)
+        error: (err) => console.error('Error creating admin:', err)
       });
     }
   }
@@ -218,38 +209,32 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(user: User) {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    if (!confirm('Are you sure you want to delete this administrator?')) return;
 
-    const baseUrl = user.type === 'admin' ? this.baseAdmins : this.baseUsers;
-    this.http.delete(`${baseUrl}/${user.id}`).subscribe({
+    this.http.delete(`${this.baseAdmins}/${user.id}`).subscribe({
       next: () => {
         this.loadUsers();
       },
-      error: (err) => console.error('Error deleting user:', err)
+      error: (err) => console.error('Error deleting admin:', err)
     });
   }
 
   toggleStatus(user: User) {
-    const baseUrl = user.type === 'admin' ? this.baseAdmins : this.baseUsers;
     const updated = { ...user, isActive: !user.isActive };
-    this.http.put(`${baseUrl}/${user.id}`, updated).subscribe({
+    this.http.put(`${this.baseAdmins}/${user.id}`, updated).subscribe({
       next: () => {
         this.loadUsers();
       },
-      error: (err) => console.error('Error updating user status:', err)
+      error: (err) => console.error('Error updating admin status:', err)
     });
   }
 
   getRoleBadgeClass(role: string): string {
-    const classes: { [key: string]: string } = {
-      'admin': 'role-admin',
-      'user': 'role-user'
-    };
-    return classes[role] || 'role-user';
+    return 'role-admin';
   }
 
   getRoleLabel(role: string): string {
-    return role.charAt(0).toUpperCase() + role.slice(1);
+    return 'Admin';
   }
 
   getTimeSinceLogin(date: string | null): string {
