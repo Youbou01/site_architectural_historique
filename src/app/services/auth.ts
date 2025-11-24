@@ -72,7 +72,7 @@ export class Auth {
 
           const u = list[0];
 
-          if (password !== u.passwordHash) {
+          if (password !== u.password) {
             return throwError(() => new Error('Mot de passe incorrect'));
           }
 
@@ -129,13 +129,13 @@ export class Auth {
           return throwError(() => new Error('Utilisateur introuvable'));
         }
 
-        if (oldPassword !== u.passwordHash) {
+        if (oldPassword !== u.password) {
           return throwError(() => new Error('Ancien mot de passe incorrect'));
         }
 
         const updated: CurrentUser = {
           ...u,
-          passwordHash: newPassword,
+          password: newPassword,
           dernierLogin: new Date().toISOString(),
         };
 

@@ -93,16 +93,10 @@ export class CommentsModerationComponent implements OnInit {
     return this.allComments.filter((item) => {
       const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
 
-      // Handle status matching - support both "en attente" and "pending"
+      // Handle status matching
       let matchStatus = !this.selectedStatus;
       if (this.selectedStatus) {
-        if (this.selectedStatus === 'en attente') {
-          // Match both "en attente" and "pending"
-          matchStatus = item.comment.etat === 'en attente' || item.comment.etat === 'pending';
-        } else {
-          // Direct match for other statuses
-          matchStatus = item.comment.etat === this.selectedStatus;
-        }
+        matchStatus = item.comment.etat === this.selectedStatus;
       }
 
       return matchSite && matchStatus;
@@ -122,9 +116,7 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   getPendingCount(): number {
-    return this.allComments.filter(
-      (c) => c.comment.etat === 'en attente' || c.comment.etat === 'en attente'
-    ).length;
+    return this.allComments.filter((c) => c.comment.etat === 'en attente').length;
   }
 
   getCommentsCountForSite(siteId: string): number {
@@ -209,13 +201,12 @@ export class CommentsModerationComponent implements OnInit {
     });
   }
 
-  getStatusBadge(etat: EtatCommentaire | 'en attente'): string {
+  getStatusBadge(etat: EtatCommentaire): string {
     switch (etat) {
       case 'approuvé':
         return 'Approved';
       case 'rejeté':
         return 'Rejected';
-      case 'en attente':
       case 'en attente':
         return 'en attente';
       default:
@@ -223,13 +214,12 @@ export class CommentsModerationComponent implements OnInit {
     }
   }
 
-  getStatusClass(etat: EtatCommentaire | 'en attente'): string {
+  getStatusClass(etat: EtatCommentaire): string {
     switch (etat) {
       case 'approuvé':
         return 'badge-success';
       case 'rejeté':
         return 'badge-danger';
-      case 'en attente':
       case 'en attente':
         return 'badge-warning';
       default:

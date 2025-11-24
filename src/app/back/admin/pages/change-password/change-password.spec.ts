@@ -43,7 +43,7 @@ describe('ChangePasswordComponent - Loading State and Success Message', () => {
       // Verify
       expect(component.isLoading).toBe(false, 'Loading should be false after success');
       expect(component.message).toBe('Password updated successfully!', 'Success message should be displayed');
-      expect(component.isSuccess).toBe(true, 'Success flag should be true for green styling');
+      expect(component.messageType).toBe('success', 'Message type should be success for green styling');
       expect(component.oldPassword).toBe('', 'Old password should be cleared');
       expect(component.newPassword).toBe('', 'New password should be cleared');
       expect(component.confirmPassword).toBe('', 'Confirm password should be cleared');
@@ -71,7 +71,7 @@ describe('ChangePasswordComponent - Loading State and Success Message', () => {
       // Verify
       expect(component.isLoading).toBe(false, 'Loading should be false after error');
       expect(component.message).toContain('Ancien mot de passe incorrect', 'Error message should be displayed');
-      expect(component.isSuccess).toBe(false, 'Success flag should be false on error');
+      expect(component.messageType).toBe('error', 'Message type should be error on failure');
       done();
     }, 100);
   });
@@ -90,7 +90,7 @@ describe('ChangePasswordComponent - Loading State and Success Message', () => {
 
     // Verify
     expect(component.message).toBe('New passwords do not match');
-    expect(component.isSuccess).toBe(false);
+    expect(component.messageType).toBe('error');
     expect(component.isLoading).toBe(false);
   });
 
@@ -108,7 +108,7 @@ describe('ChangePasswordComponent - Loading State and Success Message', () => {
 
     // Verify
     expect(component.message).toBe('Password does not meet requirements');
-    expect(component.isSuccess).toBe(false);
+    expect(component.messageType).toBe('error');
     expect(component.isLoading).toBe(false);
   });
 });

@@ -25,7 +25,7 @@ export class NavbarComponent {
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly doc = inject(DOCUMENT);
-  private authService = inject(Auth);
+  private auth = inject(Auth);
   router = inject(Router);
 
   /**
@@ -57,14 +57,14 @@ export class NavbarComponent {
    * @returns true si un utilisateur est connecté
    */
   isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
+    return this.auth.isAuthenticated();
   }
 
   /**
    * Déconnecte l'utilisateur et redirige vers la page de login.
    */
   logout() {
-    this.authService.logout();
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }
