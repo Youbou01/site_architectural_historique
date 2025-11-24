@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PatrimoineService } from '../../../services/patrimoine.service';
 import { FavoritesService } from '../../../services/favorites.service';
 import { SiteHistorique } from '../../../models/site-historique';
-import { Commentaire } from '../../../models/commentaire.model';
+import { Commentaire } from '../../../models/commentaire';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -281,7 +281,7 @@ export class MonumentDetailComponent {
       message: this.newComment.message.trim(),
       date: new Date().toISOString().split('T')[0],
       note: this.newComment.note || undefined,
-      etat: 'pending'
+      etat: 'en attente'
     };
 
     // Add comment to monument

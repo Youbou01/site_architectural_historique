@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SiteHistorique } from '../../../models/site-historique';
 import { Observable, map, switchMap } from 'rxjs';
-import { Commentaire } from '../../../models/commentaire.model';
+import { Commentaire } from '../../../models/commentaire';
 
 @Injectable({
   providedIn: 'root',

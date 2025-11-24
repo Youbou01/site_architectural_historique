@@ -67,13 +67,13 @@ export class Auth {
       .pipe(
         switchMap((list: CurrentUser[]) => {
           if (!Array.isArray(list) || list.length === 0) {
-            throw new Error('Utilisateur non trouvé');
+            return throwError(() => new Error('Utilisateur non trouvé'));
           }
 
           const u = list[0];
 
           if (password !== u.passwordHash) {
-            throw new Error('Mot de passe incorrect');
+            return throwError(() => new Error('Mot de passe incorrect'));
           }
 
           const updatedUser: CurrentUser = {
@@ -125,10 +125,12 @@ export class Auth {
   ): Observable<CurrentUser> {
     return this.http.get<CurrentUser>(`${this.baseAdmins}/${userId}`).pipe(
       switchMap((u) => {
-        if (!u) throw new Error('Utilisateur introuvable');
+        if (!u) {
+          return throwError(() => new Error('Utilisateur introuvable'));
+        }
 
         if (oldPassword !== u.passwordHash) {
-          throw new Error('Ancien mot de passe incorrect');
+          return throwError(() => new Error('Ancien mot de passe incorrect'));
         }
 
         const updated: CurrentUser = {
@@ -143,6 +145,10 @@ export class Auth {
             this.saveToStorage(result, 'admin');
           })
         );
+      }),
+      catchError((error) => {
+        console.error('Change password error:', error);
+        return throwError(() => error);
       })
     );
   }

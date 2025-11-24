@@ -3,7 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatrimoineService } from '../../../../services/patrimoine.service';
 import { SiteHistorique } from '../../../../models/site-historique';
-import { Commentaire, EtatCommentaire } from '../../../../models/commentaire.model';
+import { Commentaire, EtatCommentaire } from '../../../../models/commentaire';
 
 interface CommentWithSite {
   comment: Commentaire;
@@ -123,7 +123,7 @@ export class CommentsModerationComponent implements OnInit {
 
   getPendingCount(): number {
     return this.allComments.filter(
-      (c) => c.comment.etat === 'en attente' || c.comment.etat === 'pending'
+      (c) => c.comment.etat === 'en attente' || c.comment.etat === 'en attente'
     ).length;
   }
 
@@ -209,28 +209,28 @@ export class CommentsModerationComponent implements OnInit {
     });
   }
 
-  getStatusBadge(etat: EtatCommentaire | 'pending'): string {
+  getStatusBadge(etat: EtatCommentaire | 'en attente'): string {
     switch (etat) {
       case 'approuvé':
         return 'Approved';
       case 'rejeté':
         return 'Rejected';
       case 'en attente':
-      case 'pending':
-        return 'Pending';
+      case 'en attente':
+        return 'en attente';
       default:
         return 'Unknown';
     }
   }
 
-  getStatusClass(etat: EtatCommentaire | 'pending'): string {
+  getStatusClass(etat: EtatCommentaire | 'en attente'): string {
     switch (etat) {
       case 'approuvé':
         return 'badge-success';
       case 'rejeté':
         return 'badge-danger';
       case 'en attente':
-      case 'pending':
+      case 'en attente':
         return 'badge-warning';
       default:
         return 'badge-secondary';

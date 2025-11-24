@@ -1,4 +1,4 @@
-import { Commentaire } from './commentaire.model';
+import { Commentaire } from './commentaire';
 import { LieuProche } from './lieu-proche';
 import { Stats } from './stats';
 

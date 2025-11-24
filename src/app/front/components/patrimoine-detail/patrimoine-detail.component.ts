@@ -7,7 +7,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PatrimoineService } from '../../../services/patrimoine.service';
 import { FavoritesService } from '../../../services/favorites.service';
 import { SiteHistorique } from '../../../models/site-historique';
-import { Commentaire } from '../../../models/commentaire.model';
+import { Commentaire } from '../../../models/commentaire';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CarouselComponent } from '../ui/carousel/carousel.component';
 import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
@@ -292,7 +292,7 @@ export class PatrimoineDetailComponent {
       message: this.newComment.message.trim(),
       date: new Date().toISOString().split('T')[0],
       note: this.newComment.note || undefined,
-      etat: 'pending'
+      etat: 'en attente'
     };
 
     // Add to the first monument's comments (as we show aggregated comments from all monuments)

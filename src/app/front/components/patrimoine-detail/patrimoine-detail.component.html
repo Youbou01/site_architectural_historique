@@ -13,11 +13,7 @@
 
     @if (averageRating() !== null) {
     <div class="agg-rating">
-      <app-rating-stars
-        [value]="averageRating()"
-        [showValue]="true"
-        cssClass="inline-stars"
-      />
+      <app-rating-stars [value]="averageRating()" [showValue]="true" cssClass="inline-stars" />
       <span class="count">({{ allComments().length }} avis)</span>
     </div>
     }
@@ -338,70 +334,68 @@
   @if (activeTab() === 'comments') {
   <section class="panel comments-section" [@sectionFade]>
     <h2>Commentaires agrégés</h2>
-    
+
     <!-- Add Comment Button and Form -->
     <div class="comment-actions">
       @if (!showCommentForm()) {
-        <button class="btn-add-comment" (click)="toggleCommentForm()">
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-          </svg>
-          Ajouter un commentaire
-        </button>
+      <button class="btn-add-comment" (click)="toggleCommentForm()">
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+        Ajouter un commentaire
+      </button>
       }
     </div>
 
     @if (showCommentForm()) {
-      <div class="comment-form-container">
-        <form class="comment-form" (submit)="submitComment($event)">
-          <div class="form-group">
-            <label for="comment-name">Nom <span class="required">*</span></label>
-            <input 
-              type="text" 
-              id="comment-name" 
-              [(ngModel)]="newComment.nom" 
-              name="nom"
-              required 
-              placeholder="Votre nom"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="comment-rating">Note</label>
-            <select id="comment-rating" [(ngModel)]="newComment.note" name="note">
-              <option [value]="null">Pas de note</option>
-              <option [value]="5">5 - Excellent</option>
-              <option [value]="4">4 - Très bien</option>
-              <option [value]="3">3 - Bien</option>
-              <option [value]="2">2 - Moyen</option>
-              <option [value]="1">1 - Médiocre</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="comment-message">Message <span class="required">*</span></label>
-            <textarea 
-              id="comment-message" 
-              [(ngModel)]="newComment.message" 
-              name="message"
-              required 
-              rows="4"
-              placeholder="Partagez votre avis..."
-            ></textarea>
-          </div>
-          
-          <div class="form-actions">
-            <button type="submit" class="btn-submit">Envoyer</button>
-            <button type="button" class="btn-cancel" (click)="toggleCommentForm()">Annuler</button>
-          </div>
-        </form>
-      </div>
-    }
+    <div class="comment-form-container">
+      <form class="comment-form" (submit)="submitComment($event)">
+        <div class="form-group">
+          <label for="comment-name">Nom <span class="required">*</span></label>
+          <input
+            type="text"
+            id="comment-name"
+            [(ngModel)]="newComment.nom"
+            name="nom"
+            required
+            placeholder="Votre nom"
+          />
+        </div>
 
-    @if (allComments().length) {
+        <div class="form-group">
+          <label for="comment-rating">Note</label>
+          <select id="comment-rating" [(ngModel)]="newComment.note" name="note">
+            <option [value]="null">Pas de note</option>
+            <option [value]="5">5 - Excellent</option>
+            <option [value]="4">4 - Très bien</option>
+            <option [value]="3">3 - Bien</option>
+            <option [value]="2">2 - Moyen</option>
+            <option [value]="1">1 - Médiocre</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="comment-message">Message <span class="required">*</span></label>
+          <textarea
+            id="comment-message"
+            [(ngModel)]="newComment.message"
+            name="message"
+            required
+            rows="4"
+            placeholder="Partagez votre avis..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Envoyer</button>
+          <button type="button" class="btn-cancel" (click)="toggleCommentForm()">Annuler</button>
+        </div>
+      </form>
+    </div>
+    } @if (allComments().length) {
     <ul class="comments-list">
       @for (c of allComments(); track c.id) {
-      <li class="comment-item" [class.pending]="c.etat === 'pending' || c.etat === 'en attente'">
+      <li class="comment-item" [class]="c.etat === 'en attente'">
         <div class="avatar">{{ initiales(c.nom) }}</div>
         <div class="body">
           <div class="head">
