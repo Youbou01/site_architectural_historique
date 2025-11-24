@@ -26,19 +26,19 @@ interface FlatMonument {
   styleUrls: ['./monument-list.component.css'],
 })
 export class MonumentListComponent {
-  private patrimoineSvc = inject(PatrimoineService);
+  private patrimoineService = inject(PatrimoineService);
   private favorites = inject(FavoritesService);
 
   search = signal('');
   category = signal('');
 
   constructor() {
-    this.patrimoineSvc.loadAll();
+    this.patrimoineService.loadAll();
   }
 
   // Flatten all monuments across patrimoines
   allMonuments = computed<FlatMonument[]>(() => {
-    return this.patrimoineSvc.patrimoines().flatMap((p) =>
+    return this.patrimoineService.patrimoines().flatMap((p) =>
       (p.monuments || []).map((m) => ({
         id: m.id,
         nom: m.nom,
