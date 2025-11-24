@@ -224,11 +224,14 @@ export class SiteCrudComponent implements OnInit {
           .filter((lp) => lp.nom)
       : [];
 
+    // Find the existing site if editing to preserve existing data
+    const existingSite = this.editingId ? this.sites.find((s) => s.id === this.editingId) : null;
+
     const siteData: Partial<SiteHistorique> = {
       nom: this.formData.nom,
       localisation: this.formData.localisation,
       description: this.formData.description || '',
-      origineHistorique: '',
+      origineHistorique: existingSite?.origineHistorique || '',
       photoCarousel: this.formData.photo ? [this.formData.photo] : [],
       latitude: this.formData.latitude || 0,
       longitude: this.formData.longitude || 0,
@@ -240,13 +243,13 @@ export class SiteCrudComponent implements OnInit {
       horaires: horairesArray,
       visitesGuideesDisponibles: this.formData.visitesGuideesDisponibles,
       lieuxProches: lieuxProchesArray,
-      comments: [],
-      stats: {
+      comments: existingSite?.comments || [],
+      stats: existingSite?.stats || {
         vues: 0,
         favoris: 0,
         noteMoyenne: 0,
       },
-      monuments: [],
+      monuments: existingSite?.monuments || [],
     };
 
     if (this.editingId) {
@@ -402,6 +405,11 @@ export class SiteCrudComponent implements OnInit {
           .filter((lp) => lp.nom)
       : [];
 
+    // Find the existing monument if editing to preserve existing data
+    const existingMonument = this.editingMonumentId
+      ? (this.selectedSite.monuments || []).find((m) => m.id === this.editingMonumentId)
+      : null;
+
     const monumentData: SiteHistorique = {
       id: this.editingMonumentId || `mon-${this.selectedSite.id}-${Date.now()}`,
       nom: this.monumentFormData.nom,
@@ -420,9 +428,9 @@ export class SiteCrudComponent implements OnInit {
       categories: categoriesArray,
       visitesGuideesDisponibles: this.monumentFormData.visitesGuideesDisponibles,
       lieuxProches: lieuxProchesArray,
-      comments: [],
-      monuments: [],
-      stats: {
+      comments: existingMonument?.comments || [],
+      monuments: existingMonument?.monuments || [],
+      stats: existingMonument?.stats || {
         vues: 0,
         favoris: 0,
         noteMoyenne: 0,
