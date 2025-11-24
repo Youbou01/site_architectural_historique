@@ -18,7 +18,7 @@ import { getInitials } from '../../utils/common.utils';
 
 /**
  * Composant de vue détaillée d'un monument individuel.
- * 
+ *
  * Responsabilités:
  * - Affichage complet d'un monument appartenant à un patrimoine
  * - Récupération complexe de données via route imbriquée (patrimoine → monument)
@@ -26,7 +26,7 @@ import { getInitials } from '../../utils/common.utils';
  * - Récupération d'images additionnelles depuis sources externes
  * - Calcul de la note moyenne des commentaires du monument
  * - Gestion des favoris pour le monument
- * 
+ *
  * Architecture de routage:
  * - Route: /patrimoines/:patrimoineId/monuments/:monumentId
  * - Utilise combineLatest pour gérer les paramètres de route imbriqués
@@ -59,7 +59,7 @@ export class MonumentDetailComponent {
   private service = inject(PatrimoineService);
   private favorites = inject(FavoritesService);
   private images = inject(ImageService);
-  
+
   // Observables pour images externes (Unsplash et Wikimedia Commons)
   unsplashImages$!: Observable<FetchedImage[]>;
   commonsImages$!: Observable<FetchedImage[]>;
@@ -116,14 +116,14 @@ export class MonumentDetailComponent {
 
     /**
      * Flux RxJS complexe de récupération du monument:
-     * 
+     *
      * 1. combineLatest des paramètres de route parent et enfant
      * 2. Extraction des IDs patrimoine et monument
      * 3. Vérification du cache du patrimoine actuel
      * 4. Fallback: récupération du patrimoine complet via API si cache manquant
      * 5. Extraction du monument depuis le patrimoine
      * 6. Récupération d'images additionnelles externes
-     * 
+     *
      * Optimisation: utilise currentPatrimoine du service si disponible pour éviter requête API.
      */
     combineLatest([parent.paramMap, this.route.paramMap])
@@ -134,7 +134,7 @@ export class MonumentDetailComponent {
           this.error.set(null);
           this.monument.set(null);
         }),
-        
+
         // Extraction des IDs depuis les paramètres de route (gère différentes structures)
         map(([pp, cp]) => {
           const patrimoineId =
@@ -147,10 +147,10 @@ export class MonumentDetailComponent {
 
           return { patrimoineId, monumentId };
         }),
-        
+
         // Stockage de l'ID parent pour usage dans favoris
         tap(({ patrimoineId }) => this.parentId.set(patrimoineId ?? null)),
-        
+
         // Récupération du monument (stratégie fast path vs fallback)
         switchMap(({ patrimoineId, monumentId }) => {
           if (!patrimoineId || !monumentId) {
@@ -170,14 +170,14 @@ export class MonumentDetailComponent {
             .getById(patrimoineId)
             .pipe(map((p) => p.monuments.find((m) => m.id === monumentId) ?? null));
         }),
-        
+
         // Gestion des erreurs HTTP
         catchError((err) => {
           console.error(err);
           this.error.set('Erreur de chargement.');
           return of(null);
         }),
-        
+
         // Traitement final: mise à jour des signaux et récupération images externes
         tap((m) => {
           if (!m && !this.error()) {
@@ -185,18 +185,18 @@ export class MonumentDetailComponent {
           }
           this.monument.set(m);
           this.loading.set(false);
-          
+
           if (m) {
             // Récupération d'images additionnelles depuis les deux sources externes
             this.unsplashImages$ = this.images.fetchFor$(m.nom, 2);
             this.commonsImages$ = this.images.fetchCommons$(m.nom, 2);
-            
+
             // Fusion des images Unsplash
             this.unsplashImages$.pipe(takeUntilDestroyed()).subscribe((u) => {
               const current = this.extraImages();
               this.extraImages.set([...u, ...current.filter((i) => i.source !== 'unsplash')]);
             });
-            
+
             // Fusion des images Commons
             this.commonsImages$.pipe(takeUntilDestroyed()).subscribe((c) => {
               const current = this.extraImages();
@@ -204,7 +204,7 @@ export class MonumentDetailComponent {
             });
           }
         }),
-        
+
         // Auto-désabonnement lors de la destruction du composant
         takeUntilDestroyed()
       )

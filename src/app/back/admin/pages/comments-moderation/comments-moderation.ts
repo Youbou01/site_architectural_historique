@@ -82,19 +82,15 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   filteredComments(): CommentWithSite[] {
+    const statusMap: Record<string, string> = {
+      approved: 'approuvé',
+      rejected: 'rejeté',
+      pending: 'en attente'
+    };
+
     return this.allComments.filter(item => {
       const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
-
-      let matchStatus = true;
-      // FIXED: Proper filtering by status
-      if (this.selectedStatus === 'approved') {
-        matchStatus = item.comment.etat === 'approuvé';
-      } else if (this.selectedStatus === 'rejected') {
-        matchStatus = item.comment.etat === 'rejeté';
-      } else if (this.selectedStatus === 'pending') {
-        matchStatus = item.comment.etat === 'en attente';
-      }
-
+      const matchStatus = !this.selectedStatus || item.comment.etat === statusMap[this.selectedStatus];
       return matchSite && matchStatus;
     });
   }
