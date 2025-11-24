@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   isLoading = false;
   message = '';
+  isSuccess = false;
 
   loginData = {
     username: '',
@@ -34,17 +35,20 @@ export class LoginComponent {
   login() {
     if (!this.loginData.username || !this.loginData.password) {
       this.message = 'Veuillez remplir tous les champs';
+      this.isSuccess = false;
       return false;
     }
 
     this.isLoading = true;
     this.message = '';
+    this.isSuccess = false;
 
     // Always login as admin
     this.auth.login(this.loginData.username, this.loginData.password, true)
     .subscribe({
       next: (user) => {
         this.message = 'Connexion réussie !';
+        this.isSuccess = true;
         this.isLoading = false;
 
         setTimeout(() => {
@@ -53,6 +57,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.message = err.message || 'Échec de la connexion';
+        this.isSuccess = false;
         this.isLoading = false;
       }
     });
