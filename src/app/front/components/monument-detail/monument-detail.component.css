@@ -477,10 +477,23 @@
 }
 
 .comment.pending {
-  opacity: 0.6;
+  opacity: 0.65;
   filter: blur(0.5px);
   background: rgba(251, 191, 36, 0.05);
   border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.comment.approved {
+  opacity: 1;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.comment.rejected {
+  opacity: 0.4;
+  text-decoration: line-through;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .comment .status.pending {

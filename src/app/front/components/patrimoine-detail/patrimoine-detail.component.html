@@ -313,10 +313,10 @@
               </svg>
               Classé
             </span>
-            } @if (m.comments.length) {
+            } @if ((m.comments ?? []).length) {
             <span class="flag comments">
               <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v12H7l-3 3V4Z" /></svg>
-              {{ m.comments.length }}
+              {{ (m.comments ?? []).length }}
             </span>
             }
           </div>
@@ -394,15 +394,21 @@
     </div>
     } @if (allComments().length) {
     <ul class="comments-list">
-      @for (c of allComments(); track c.id) {
-      <li class="comment-item" [class]="c.etat === 'en attente'">
+      @for (c of allComments(); track c?.id ?? $index) {
+      <li class="comment-item"
+          [class.pending]="c.etat === 'en attente'"
+          [class.approved]="c.etat === 'approuvé'"
+          [class.rejected]="c.etat === 'rejeté'">
         <div class="avatar">{{ initiales(c.nom) }}</div>
         <div class="body">
           <div class="head">
             <span class="author">{{ c.nom }}</span>
             <span class="date">{{ c.date }}</span>
             @if (c.etat) {
-            <span class="status" [class]="commentStatusClass(c.etat)">{{ c.etat }}</span>
+            <span class="status"
+                  [class.pending]="c.etat === 'en attente'"
+                  [class.approved]="c.etat === 'approuvé'"
+                  [class.rejected]="c.etat === 'rejeté'">{{ c.etat }}</span>
             } @if (c.note) {
             <app-rating-stars [value]="c.note" cssClass="rating" />
             }

@@ -14,7 +14,7 @@ import { SafeUrlPipe } from '../../../pipes/safe-url.pipe';
 import { ImageService } from '../../../services/image.service';
 import { RatingStarsComponent } from '../shared/rating-stars.component';
 import { CategoryChipsComponent } from '../shared/category-chips.component';
-import { getInitials, getCommentStatusClass } from '../../utils/common.utils';
+import { getInitials } from '../../utils/common.utils';
 
 /** Type union des onglets disponibles dans la vue détail patrimoine */
 type TabKey = 'about' | 'monuments' | 'comments' | 'map';
@@ -140,11 +140,14 @@ export class PatrimoineDetailComponent {
   /**
    * Calcul dérivé: tous les commentaires de tous les monuments, aplatis en une seule liste.
    * Utilisé pour afficher l'onglet "Commentaires" global du patrimoine.
+   * Inclut les commentaires au niveau patrimoine et au niveau monument.
    */
   allComments = computed(() => {
     const p = this.patrimoine();
     if (!p) return [];
-    return p.monuments.flatMap((m) => m.comments);
+    const patrimoineComments = p.comments ?? [];
+    const monumentComments = (p.monuments ?? []).flatMap(m => m.comments ?? []);
+    return [...patrimoineComments, ...monumentComments];
   });
 
   /**
@@ -235,9 +238,8 @@ export class PatrimoineDetailComponent {
     this.monumentCategory.set(val);
   }
 
-  // Fonctions utilitaires importées pour usage dans le template
+  // Fonction utilitaire importée pour usage dans le template
   initiales = getInitials;
-  commentStatusClass = getCommentStatusClass;
 
   /**
    * Vérifie si ce patrimoine est dans les favoris de l'utilisateur.
@@ -295,24 +297,28 @@ export class PatrimoineDetailComponent {
       etat: 'en attente'
     };
 
-    // Add to the first monument's comments (as we show aggregated comments from all monuments)
-    // In a real scenario, you might want to let the user choose which monument to comment on
+    // Create updated patrimoine using immutable pattern for proper signal reactivity
+    let updatedPatrimoine: SiteHistorique;
     if (p.monuments && p.monuments.length > 0) {
-      p.monuments[0].comments = p.monuments[0].comments || [];
-      p.monuments[0].comments.push(comment);
+      // Add to the first monument's comments (as we show aggregated comments from all monuments)
+      const first = p.monuments[0];
+      const updatedFirst = { ...first, comments: [...(first.comments ?? []), comment] };
+      updatedPatrimoine = { ...p, monuments: [updatedFirst, ...p.monuments.slice(1)] };
     } else {
       // If no monuments, add to patrimoine itself
-      p.comments = p.comments || [];
-      p.comments.push(comment);
+      updatedPatrimoine = { ...p, comments: [...(p.comments ?? []), comment] };
     }
 
+    // Optimistically update the local signal for immediate UI feedback
+    this.patrimoine.set(updatedPatrimoine);
+
     // Update via service
-    this.service.updatePatrimoine(p.id, p).subscribe({
+    this.service.updatePatrimoine(p.id, updatedPatrimoine).subscribe({
       next: () => {
         alert('Commentaire soumis pour modération !');
         this.resetCommentForm();
         this.showCommentForm.set(false);
-        // Refresh data
+        // Refresh data from server to ensure consistency
         this.service.getById(p.id).subscribe(updated => {
           this.patrimoine.set(updated);
         });
@@ -320,6 +326,8 @@ export class PatrimoineDetailComponent {
       error: (err) => {
         console.error('Error submitting comment:', err);
         alert('Erreur lors de la soumission du commentaire');
+        // Revert to previous state on error
+        this.patrimoine.set(p);
       }
     });
   }

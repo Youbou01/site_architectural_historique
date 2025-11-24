@@ -166,15 +166,18 @@
         </span>
         Commentaires
         <span class="count-badge" aria-label="nombre de commentaires">
-          {{ monument()!.comments.length }}
+          {{ (monument()!.comments ?? []).length }}
         </span>
       </h3>
 
-      @if (monument()!.comments.length) {
+      @if ((monument()!.comments ?? []).length) {
 
       <ul class="comments">
-        @for (c of monument()!.comments; track c.id) {
-        <li class="comment" [class.pending]="c.etat === 'en attente'">
+        @for (c of monument()!.comments ?? []; track c?.id ?? $index) {
+        <li class="comment"
+            [class.pending]="c.etat === 'en attente'"
+            [class.approved]="c.etat === 'approuvé'"
+            [class.rejected]="c.etat === 'rejeté'">
           <div class="avatar" [attr.aria-label]="'Avatar ' + c.nom">
             {{ initiales(c.nom) }}
           </div>

@@ -284,30 +284,34 @@ export class MonumentDetailComponent {
       etat: 'en attente'
     };
 
-    // Add comment to monument
-    m.comments = m.comments || [];
-    m.comments.push(comment);
+    // Create updated monument using immutable pattern for proper signal reactivity
+    const updatedMonument = { ...m, comments: [...(m.comments ?? []), comment] };
+
+    // Optimistically update the local signal for immediate UI feedback
+    this.monument.set(updatedMonument);
 
     // Get the parent patrimoine and update it
     this.service.getById(pId).subscribe({
       next: (patrimoine) => {
-        // Find and update the monument in the patrimoine
+        // Find and update the monument in the patrimoine using immutable pattern
         const monumentIndex = patrimoine.monuments.findIndex(mon => mon.id === m.id);
         if (monumentIndex !== -1) {
-          patrimoine.monuments[monumentIndex] = m;
+          const updatedMonuments = [...patrimoine.monuments];
+          updatedMonuments[monumentIndex] = updatedMonument;
+          const updatedPatrimoine = { ...patrimoine, monuments: updatedMonuments };
           
           // Update the entire patrimoine
-          this.service.updatePatrimoine(pId, patrimoine).subscribe({
+          this.service.updatePatrimoine(pId, updatedPatrimoine).subscribe({
             next: () => {
               alert('Commentaire soumis pour modération !');
               this.resetCommentForm();
               this.showCommentForm.set(false);
-              // Update the local monument signal
-              this.monument.set(m);
             },
             error: (err) => {
               console.error('Error updating patrimoine:', err);
               alert('Erreur lors de la soumission du commentaire');
+              // Revert to previous state on error
+              this.monument.set(m);
             }
           });
         }
@@ -315,6 +319,8 @@ export class MonumentDetailComponent {
       error: (err) => {
         console.error('Error fetching patrimoine:', err);
         alert('Erreur lors de la soumission du commentaire');
+        // Revert to previous state on error
+        this.monument.set(m);
       }
     });
   }
