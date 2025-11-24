@@ -28,13 +28,30 @@ export class DashboardComponent implements OnInit {
 
   loadStats() {
     this.isLoading = true;
+
+    // FIXED: Force reload and wait for data with interval
+    this.patrimoineService.patrimoines.set([]);
     this.patrimoineService.loadAll();
 
-    setTimeout(() => {
+    // FIXED: Check data availability with interval instead of setTimeout
+    const checkData = setInterval(() => {
       const sites = this.patrimoineService.patrimoines();
-      this.stats = this.calculateStats(sites);
-      this.isLoading = false;
-    }, 500);
+      if (sites.length > 0) {
+        clearInterval(checkData);
+        this.stats = this.calculateStats(sites);
+        this.isLoading = false;
+      }
+    }, 100);
+
+    // Timeout fallback after 5 seconds
+    setTimeout(() => {
+      clearInterval(checkData);
+      if (this.isLoading) {
+        const sites = this.patrimoineService.patrimoines();
+        this.stats = this.calculateStats(sites);
+        this.isLoading = false;
+      }
+    }, 5000);
   }
 
   private calculateStats(sites: SiteHistorique[]): StatsSummary {
@@ -44,10 +61,26 @@ export class DashboardComponent implements OnInit {
     let ratingCount = 0;
 
     sites.forEach((site: SiteHistorique) => {
-      const comments = site.comments || [];
-      totalComments += comments.length;
+      // FIXED: Count comments from both site AND monuments
+      const siteComments = site.comments || [];
+      totalComments += siteComments.length;
 
-      comments.forEach(c => {
+      // Add monument comments
+      (site.monuments || []).forEach(monument => {
+        const monumentComments = monument.comments || [];
+        totalComments += monumentComments.length;
+
+        // Include monument ratings
+        monumentComments.forEach(c => {
+          if (typeof c.note === 'number') {
+            ratingSum += c.note;
+            ratingCount++;
+          }
+        });
+      });
+
+      // Count site ratings
+      siteComments.forEach(c => {
         if (typeof c.note === 'number') {
           ratingSum += c.note;
           ratingCount++;
@@ -57,11 +90,19 @@ export class DashboardComponent implements OnInit {
 
     const avgRating = ratingCount > 0 ? +(ratingSum / ratingCount).toFixed(2) : null;
 
+    // FIXED: Include monument comments in top sites calculation
     const topSitesByComments = sites
-      .map((s: SiteHistorique) => ({
-        site: s,
-        comments: (s.comments || []).length
-      }))
+      .map((s: SiteHistorique) => {
+        const siteCommentsCount = (s.comments || []).length;
+        const monumentCommentsCount = (s.monuments || []).reduce(
+          (sum, m) => sum + (m.comments || []).length,
+          0
+        );
+        return {
+          site: s,
+          comments: siteCommentsCount + monumentCommentsCount
+        };
+      })
       .sort((a, b) => b.comments - a.comments)
       .slice(0, 5);
 

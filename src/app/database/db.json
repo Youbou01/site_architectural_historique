@@ -1461,6 +1461,68 @@
           }
         }
       ]
+    },
+    {
+      "id": "6847",
+      "nom": "hh",
+      "localisation": "hh",
+      "description": "",
+      "origineHistorique": "",
+      "photoCarousel": [],
+      "latitude": 10,
+      "longitude": 15,
+      "categories": [
+        "Patrimoine immatériel"
+      ],
+      "dateConstruction": "2021-01-12",
+      "estClasse": false,
+      "prixEntree": 5,
+      "ouvert": true,
+      "horaires": [
+        "9:00-17:00",
+        "Lun-Ferme"
+      ],
+      "visitesGuideesDisponibles": false,
+      "lieuxProches": [],
+      "comments": [],
+      "stats": {
+        "vues": 0,
+        "favoris": 0,
+        "noteMoyenne": 0
+      },
+      "monuments": [
+        {
+          "id": "mon-6847-1763947117865",
+          "nom": "gg",
+          "localisation": "hh",
+          "adresse": "gg",
+          "description": "gg",
+          "origineHistorique": "gg",
+          "photoCarousel": [],
+          "latitude": 10,
+          "longitude": 20,
+          "dateConstruction": "2020-10-05",
+          "estClasse": false,
+          "prixEntree": 10,
+          "ouvert": true,
+          "horaires": [
+            "9:00-17:00",
+            "Lun-Ferme"
+          ],
+          "categories": [
+            "gg"
+          ],
+          "visitesGuideesDisponibles": false,
+          "lieuxProches": [],
+          "comments": [],
+          "monuments": [],
+          "stats": {
+            "vues": 0,
+            "favoris": 0,
+            "noteMoyenne": 0
+          }
+        }
+      ]
     }
   ],
   "admins": [
@@ -1469,12 +1531,12 @@
       "username": "admin",
       "email": "admin@patrimoine.tn",
       "password": "admin",
-      "role": "super_admin",
+      "role": "admin",
       "fullName": "Mohamed Administrateur",
       "avatar": "https://i.pravatar.cc/150?u=17",
       "phone": "+216 20 123 456",
       "dateCreated": "2024-01-15T10:00:00.000Z",
-      "dernierLogin": "2025-11-23T21:36:21.431Z",
+      "dernierLogin": "2025-11-24T01:07:35.977Z",
       "isActive": true,
       "type": "admin"
     },
@@ -1483,7 +1545,7 @@
       "username": "moderator1",
       "email": "moderator@patrimoine.tn",
       "password": "moderator123",
-      "role": "moderator",
+      "role": "admin",
       "fullName": "Fatma Ben Salem",
       "avatar": "https://i.pravatar.cc/150?u=10",
       "phone": "+216 22 456 789",
@@ -1497,12 +1559,12 @@
       "username": "editor1",
       "email": "editor@patrimoine.tn",
       "password": "editor123",
-      "role": "editor",
+      "role": "admin",
       "fullName": "Ahmed Trabelsi",
       "avatar": "https://i.pravatar.cc/150?u=100",
       "phone": "+216 23 789 012",
       "dateCreated": "2024-06-10T09:15:00.000Z",
-      "dernierLogin": "2025-11-23T02:03:21.062Z",
+      "dernierLogin": "2025-11-23T21:51:08.456Z",
       "isActive": true,
       "type": "admin"
     }
@@ -1557,6 +1619,19 @@
       "favorites": [],
       "type": "user",
       "role": "user"
+    },
+    {
+      "id": "d3fa",
+      "username": "ayoub",
+      "email": "ayoub@gmail.com",
+      "password": "ayoubayoub",
+      "fullName": "ayoub",
+      "phone": "96860249",
+      "avatar": "https://i.pravatar.cc/150?u=ayoub",
+      "dateCreated": "2025-11-23T21:48:43.693Z",
+      "dernierLogin": "2025-11-23T21:48:45.225Z",
+      "isActive": true,
+      "favorites": []
     }
   ]
 }

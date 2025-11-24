@@ -1,10 +1,14 @@
+/* FIXED: Removed conflicting positioning and added flexbox support */
 .site-footer {
-  position: relative;
+  /* FIXED: Remove position: relative that was causing frozen footer */
   padding: 40px 0 24px;
   margin-top: 60px;
   background: linear-gradient(180deg,#0f172a,#0b1220 70%);
   border-top: 1px solid #1e293b;
+  /* FIXED: Added flexbox support for sticky footer */
+  flex-shrink: 0;
 }
+
 .site-footer .decor {
   position: absolute;
   inset: 0;
@@ -14,6 +18,7 @@
   pointer-events: none;
   opacity: .55;
 }
+
 .site-footer h5, .site-footer h6 { font-weight: 600; }
 .site-footer ul { margin: 0; padding: 0; }
 .site-footer li { margin-bottom: 4px; }
@@ -23,6 +28,7 @@
   gap: 10px;
   margin-top: 12px;
 }
+
 .social-btn {
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.15);
@@ -34,10 +40,12 @@
   cursor: pointer;
   transition: background .3s, transform .3s;
 }
+
 .social-btn:hover {
   background: rgba(14,165,233,.25);
   transform: translateY(-4px);
 }
+
 .social-btn svg { width: 20px; height: 20px; }
 
 .site-footer hr { opacity: .18; }

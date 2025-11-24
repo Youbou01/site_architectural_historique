@@ -129,10 +129,12 @@ export class LoginComponent {
 
         setTimeout(() => {
           console.log('Auto-login started...');
+          // FIXED: Use isAdmin = false for regular user auto-login
           this.auth.login(this.registerData.username, this.registerData.password, false).subscribe({
             next: () => {
               console.log('Auto-login successful');
-              this.router.navigate(['/']);
+              // FIXED: Redirect to home page instead of admin
+              this.router.navigate(['/patrimoines']);
             },
             error: (err) => {
               console.error('Auto-login failed:', err);

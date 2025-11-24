@@ -163,12 +163,19 @@
   border-radius: 10px;
   font-weight: 600;
   transition: all 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-add:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
   color: white;
+}
+
+.btn-add.btn-sm {
+  padding: 8px 18px;
+  font-size: 14px;
 }
 
 .table-container {
@@ -248,11 +255,19 @@
   font-size: 13px;
 }
 
+.monument-count {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 14px;
+}
+
 .category-badge {
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .category-badge.medina { background: #e3f2fd; color: #1976d2; }
@@ -261,6 +276,11 @@
 .category-badge.archeologique { background: #e8f5e9; color: #388e3c; }
 .category-badge.religieux { background: #fce4ec; color: #c2185b; }
 .category-badge.autre { background: #f5f5f5; color: #616161; }
+.category-badge.romaine { background: #ffe0b2; color: #e65100; }
+.category-badge.historique { background: #fff9c4; color: #f57f17; }
+.category-badge.immateriel { background: #f3e5f5; color: #7b1fa2; }
+.category-badge.naturel { background: #c8e6c9; color: #2e7d32; }
+.category-badge.culturelle { background: #b2ebf2; color: #00838f; }
 
 .price-badge {
   font-weight: 600;
@@ -309,6 +329,16 @@
   text-decoration: none;
 }
 
+.btn-monuments {
+  background: #e8eaf6;
+  color: #5e35b1;
+}
+
+.btn-monuments:hover {
+  background: #5e35b1;
+  color: white;
+}
+
 .btn-edit {
   background: #fff3e0;
   color: #f57c00;
@@ -350,6 +380,25 @@
   margin-bottom: 20px;
 }
 
+.empty-state-small {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.empty-state-small i {
+  font-size: 50px;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.empty-state-small p {
+  color: #888;
+  margin: 0;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -360,9 +409,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 20px;
   animation: fadeIn 0.3s ease;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -375,6 +425,13 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10000;
+  margin: auto;
+}
+
+.modal-content.modal-large {
+  max-width: 900px;
 }
 
 .modal-header {
@@ -384,6 +441,7 @@
   padding: 20px 25px;
   border-bottom: 1px solid #eee;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -397,6 +455,15 @@
 
 .modal-header .btn-close {
   filter: brightness(0) invert(1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.modal-header .btn-close:hover {
+  opacity: 1;
 }
 
 .modal-body {
@@ -412,6 +479,7 @@
   padding: 20px 25px;
   border-top: 1px solid #eee;
   background: #f8f9fa;
+  flex-shrink: 0;
 }
 
 .modal-footer .btn {
@@ -419,11 +487,17 @@
   font-weight: 600;
   border-radius: 10px;
   transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .modal-footer .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
+  color: white;
 }
 
 .modal-footer .btn-primary:hover {
@@ -431,8 +505,15 @@
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
+.modal-footer .btn-outline-secondary {
+  background: white;
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
 .modal-footer .btn-outline-secondary:hover {
-  background: #f8f9fa;
+  background: #6c757d;
+  color: white;
 }
 
 .form-label {
@@ -440,6 +521,7 @@
   color: #555;
   font-size: 14px;
   margin-bottom: 5px;
+  display: block;
 }
 
 .form-control, .form-select {
@@ -447,16 +529,132 @@
   border-radius: 8px;
   border: 1px solid #ddd;
   transition: all 0.3s ease;
+  width: 100%;
+  font-size: 14px;
 }
 
 .form-control:focus, .form-select:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
 }
 
 .form-check-input:checked {
   background-color: #667eea;
   border-color: #667eea;
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+.row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.row > [class*='col-'] {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.text-muted {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+/* Monument Management Styles */
+.monuments-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.monuments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.monument-card {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.monument-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.monument-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #ddd;
+}
+
+.monument-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.monument-info {
+  flex: 1;
+}
+
+.monument-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.monument-info p {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 10px 0;
+}
+
+.monument-meta {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #888;
+}
+
+.monument-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.unesco-badge {
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  color: #333;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.monument-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -472,6 +670,26 @@
     text-align: left;
   }
 
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .search-filter-row {
+    flex-direction: column;
+  }
+
+  .search-filter-row .input-group {
+    min-width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
   .table-container {
     overflow-x: auto;
   }
@@ -480,15 +698,48 @@
     display: none;
   }
 
+  .modal-overlay {
+    padding: 10px;
+  }
+
   .modal-content {
     max-height: 95vh;
+    max-width: 100%;
+  }
+
+  .modal-content.modal-large {
+    max-width: 100%;
+  }
+
+  .modal-body {
+    padding: 20px 15px;
   }
 
   .modal-footer {
     flex-direction: column;
+    padding: 15px;
   }
 
   .modal-footer .btn {
     width: 100%;
+    justify-content: center;
+  }
+
+  .category-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .monument-card {
+    flex-direction: column;
+  }
+
+  .monument-image {
+    width: 100%;
+    height: 150px;
+  }
+
+  .monument-actions {
+    flex-direction: row;
   }
 }

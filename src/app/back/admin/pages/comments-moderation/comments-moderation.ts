@@ -30,35 +30,55 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   loadComments() {
+    // FIXED: Force reload and wait for data with interval
+    this.patrimoineService.patrimoines.set([]);
     this.patrimoineService.loadAll();
 
-    setTimeout(() => {
-      this.sites = this.patrimoineService.patrimoines();
-      this.allComments = [];
+    // FIXED: Check data availability with interval
+    const checkData = setInterval(() => {
+      const sites = this.patrimoineService.patrimoines();
+      if (sites.length > 0) {
+        clearInterval(checkData);
+        this.sites = sites;
+        // FIXED: Separate data loading from comment collection
+        this.collectComments();
+      }
+    }, 100);
 
-      // Collecter tous les commentaires de tous les sites et monuments
-      this.sites.forEach((site: SiteHistorique) => {
-        // Commentaires du site principal
-        (site.comments || []).forEach((comment: Commentaire) => {
+    // Timeout fallback after 5 seconds
+    setTimeout(() => {
+      clearInterval(checkData);
+      this.sites = this.patrimoineService.patrimoines();
+      this.collectComments();
+    }, 5000);
+  }
+
+  // FIXED: Dedicated method to collect comments
+  private collectComments() {
+    this.allComments = [];
+
+    this.sites.forEach((site: SiteHistorique) => {
+      // Commentaires du site principal
+      (site.comments || []).forEach((comment: Commentaire) => {
+        this.allComments.push({
+          comment,
+          siteId: site.id,
+          siteName: site.nom
+        });
+      });
+
+      // FIXED: Properly collect monument comments using SITE ID for proper grouping
+      (site.monuments || []).forEach((monument: SiteHistorique) => {
+        (monument.comments || []).forEach((comment: Commentaire) => {
           this.allComments.push({
             comment,
+            // FIXED: Use parent site ID for proper filtering in dropdown
             siteId: site.id,
-            siteName: site.nom
-          });
-        });
-
-        // Commentaires des monuments
-        (site.monuments || []).forEach((monument: SiteHistorique) => {
-          (monument.comments || []).forEach((comment: Commentaire) => {
-            this.allComments.push({
-              comment,
-              siteId: monument.id,
-              siteName: `${site.nom} - ${monument.nom}`
-            });
+            siteName: `${site.nom} - ${monument.nom}`
           });
         });
       });
-    }, 500);
+    });
   }
 
   filteredComments(): CommentWithSite[] {
@@ -66,6 +86,7 @@ export class CommentsModerationComponent implements OnInit {
       const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
 
       let matchStatus = true;
+      // FIXED: Proper filtering by status
       if (this.selectedStatus === 'approved') {
         matchStatus = item.comment.etat === 'approuvé';
       } else if (this.selectedStatus === 'rejected') {

@@ -51,12 +51,15 @@
       </div>
       <select class="form-select filter-select" [(ngModel)]="filterCategory">
         <option value="">All Categories</option>
+        <option value="Site archéologique">Site archéologique</option>
+        <option value="Infrastructure romaine">Infrastructure romaine</option>
+        <option value="Ville historique">Ville historique</option>
         <option value="Médina">Médina</option>
-        <option value="Monument">Monument</option>
-        <option value="Musée">Musée</option>
-        <option value="Site Archéologique">Site Archéologique</option>
-        <option value="Religieux">Religieux</option>
-        <option value="Autre">Autre</option>
+        <option value="Patrimoine immatériel">Patrimoine immatériel</option>
+        <option value="Parc naturel">Parc naturel</option>
+        <option value="Site historique">Site historique</option>
+        <option value="Ville religieuse">Ville religieuse</option>
+        <option value="Île culturelle">Île culturelle</option>
       </select>
       <button (click)="openAddForm()" class="btn btn-add">
         <i class="bi bi-plus-lg me-2"></i>Add New Site
@@ -84,6 +87,7 @@
               <th>Site</th>
               <th>Location</th>
               <th>Category</th>
+              <th>Monuments</th>
               <th>Price</th>
               <th>Status</th>
               <th>Actions</th>
@@ -95,7 +99,7 @@
                 <td>
                   <div class="site-info">
                     <div class="site-image">
-                      <img [src]="s.photoCarousel[0] || 'assets/images/default.jpg'" [alt]="s.nom" (error)="onImageError($event)" />
+                      <img [src]="(s.photoCarousel && s.photoCarousel[0]) || 'assets/images/default.jpg'" [alt]="s.nom" (error)="onImageError($event)" />
                     </div>
                     <div class="site-details">
                       <span class="site-name">{{ s.nom }}</span>
@@ -109,8 +113,13 @@
                   </span>
                 </td>
                 <td>
-                  <span class="category-badge" [ngClass]="getCategoryClass(s.categories[0] || 'Autre')">
-                    {{ s.categories[0] || 'Autre' }}
+                  <span class="category-badge" [ngClass]="getCategoryClass(s.categories[0] || 'Site archéologique')">
+                    {{ s.categories[0] || 'Site archéologique' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="monument-count">
+                    <i class="bi bi-bank me-1"></i>{{ (s.monuments || []).length }}
                   </span>
                 </td>
                 <td>
@@ -126,9 +135,12 @@
                 </td>
                 <td>
                   <div class="action-buttons">
-                    <a [routerLink]="['/admin/site-edit', s.id]" class="btn-action btn-edit" title="Edit">
+                    <button (click)="openMonumentsModal(s)" class="btn-action btn-monuments" title="Manage Monuments">
+                      <i class="bi bi-bank"></i>
+                    </button>
+                    <button (click)="openEditForm(s)" class="btn-action btn-edit" title="Edit">
                       <i class="bi bi-pencil"></i>
-                    </a>
+                    </button>
                     <button (click)="delete(s.id)" class="btn-action btn-delete" title="Delete">
                       <i class="bi bi-trash"></i>
                     </button>
@@ -143,6 +155,7 @@
   </div>
 </div>
 
+<!-- Site Form Modal -->
 @if (showForm) {
   <div class="modal-overlay" (click)="cancelForm()">
     <div class="modal-content" (click)="$event.stopPropagation()">
@@ -171,12 +184,15 @@
             <div class="col-md-6 mb-3">
               <label class="form-label">Category</label>
               <select [(ngModel)]="formData.categorie" name="categorie" class="form-select">
+                <option value="Site archéologique">Site archéologique</option>
+                <option value="Infrastructure romaine">Infrastructure romaine</option>
+                <option value="Ville historique">Ville historique</option>
                 <option value="Médina">Médina</option>
-                <option value="Monument">Monument</option>
-                <option value="Musée">Musée</option>
-                <option value="Site Archéologique">Site Archéologique</option>
-                <option value="Religieux">Religieux</option>
-                <option value="Autre">Autre</option>
+                <option value="Patrimoine immatériel">Patrimoine immatériel</option>
+                <option value="Parc naturel">Parc naturel</option>
+                <option value="Site historique">Site historique</option>
+                <option value="Ville religieuse">Ville religieuse</option>
+                <option value="Île culturelle">Île culturelle</option>
               </select>
             </div>
             <div class="col-md-6 mb-3">
@@ -202,7 +218,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Opening Hours</label>
-              <input type="text" [(ngModel)]="formData.horaires" name="horaires" class="form-control" placeholder="9:00-17:00, Lun-Fermé" />
+              <input type="text" [(ngModel)]="formData.horaires" name="horaires" class="form-control" placeholder="09:00-17:00, 10:00-18:00" />
+              <small class="text-muted">Separate multiple hours with commas</small>
             </div>
           </div>
 
@@ -245,6 +262,187 @@
           </button>
           <button type="submit" class="btn btn-primary">
             <i class="bi bi-check-lg me-1"></i>{{ editingId ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Monuments Management Modal -->
+@if (showMonumentsModal) {
+  <div class="modal-overlay" (click)="closeMonumentsModal()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="bi bi-bank me-2"></i>
+          Monuments - {{ selectedSite?.nom }}
+        </h3>
+        <button type="button" class="btn-close" (click)="closeMonumentsModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="monuments-header">
+          <button (click)="openAddMonumentForm()" class="btn btn-add btn-sm">
+            <i class="bi bi-plus-lg me-2"></i>Add Monument
+          </button>
+        </div>
+
+        @if ((selectedSite?.monuments || []).length === 0) {
+          <div class="empty-state-small">
+            <i class="bi bi-bank"></i>
+            <p>No monuments yet. Add your first monument!</p>
+          </div>
+        } @else {
+          <div class="monuments-list">
+            @for (monument of selectedSite?.monuments; track monument.id) {
+              <div class="monument-card">
+                <div class="monument-image">
+                  <img [src]="(monument.photoCarousel && monument.photoCarousel[0]) || 'assets/images/default.jpg'" [alt]="monument.nom" (error)="onImageError($event)" />
+                </div>
+                <div class="monument-info">
+                  <h4>{{ monument.nom }}</h4>
+                  <p>{{ truncate(monument.description, 100) }}</p>
+                  <div class="monument-meta">
+                    <span><i class="bi bi-geo-alt"></i> {{ monument.adresse }}</span>
+                    <span><i class="bi bi-cash"></i> {{ monument.prixEntree === 0 ? 'Free' : monument.prixEntree + ' DT' }}</span>
+                    @if (monument.estClasse) {
+                      <span class="unesco-badge"><i class="bi bi-award-fill"></i> UNESCO</span>
+                    }
+                  </div>
+                </div>
+                <div class="monument-actions">
+                  <button (click)="openEditMonumentForm(monument)" class="btn-action btn-edit" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button (click)="deleteMonument(monument.id)" class="btn-action btn-delete" title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeMonumentsModal()">
+          <i class="bi bi-x-lg me-1"></i>Close
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Monument Form Modal -->
+@if (showMonumentForm) {
+  <div class="modal-overlay" (click)="cancelMonumentForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="bi" [ngClass]="editingMonumentId ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+          {{ editingMonumentId ? 'Edit Monument' : 'Add New Monument' }}
+        </h3>
+        <button type="button" class="btn-close" (click)="cancelMonumentForm()"></button>
+      </div>
+
+      <form (submit)="saveMonument(); $event.preventDefault()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Monument Name *</label>
+              <input type="text" [(ngModel)]="monumentFormData.nom" name="nom" class="form-control" placeholder="Enter monument name" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Address *</label>
+              <input type="text" [(ngModel)]="monumentFormData.adresse" name="adresse" class="form-control" placeholder="Enter address" required />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea [(ngModel)]="monumentFormData.description" name="description" class="form-control" rows="3" placeholder="Enter description..."></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Categories (comma-separated)</label>
+              <input type="text" [(ngModel)]="monumentFormData.categories" name="categories" class="form-control" placeholder="Romain, Spectacle" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Entry Price (DT)</label>
+              <input type="number" [(ngModel)]="monumentFormData.prixEntree" name="prixEntree" class="form-control" placeholder="0" min="0" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Photo URLs (comma-separated)</label>
+            <input type="text" [(ngModel)]="monumentFormData.photos" name="photos" class="form-control" placeholder="image1.jpg, image2.jpg" />
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Construction Date</label>
+              <input type="date" [(ngModel)]="monumentFormData.dateConstruction" name="dateConstruction" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Historical Origin</label>
+              <input type="text" [(ngModel)]="monumentFormData.origineHistorique" name="origineHistorique" class="form-control" placeholder="Antiquité romaine" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Opening Hours</label>
+              <input type="text" [(ngModel)]="monumentFormData.horaires" name="horaires" class="form-control" placeholder="09:00-17:00, 10:00-18:00" />
+              <small class="text-muted">Separate multiple hours with commas</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nearby Places</label>
+              <input type="text" [(ngModel)]="monumentFormData.lieuxProches" name="lieuxProches" class="form-control" placeholder="Musée|Musée|0.4" />
+              <small class="text-muted">Format: name|type|distance; separate with semicolons</small>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="monumentFormData.estClasse" name="estClasse" id="monEstClasse" />
+                <label class="form-check-label" for="monEstClasse">UNESCO Classified</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="monumentFormData.ouvert" name="ouvert" id="monOuvert" />
+                <label class="form-check-label" for="monOuvert">Open to Public</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="monumentFormData.visitesGuideesDisponibles" name="visitesGuideesDisponibles" id="monGuidedTours" />
+                <label class="form-check-label" for="monGuidedTours">Guided Tours</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Latitude</label>
+              <input type="number" step="0.0001" [(ngModel)]="monumentFormData.latitude" name="latitude" class="form-control" placeholder="35.30062" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Longitude</label>
+              <input type="number" step="0.0001" [(ngModel)]="monumentFormData.longitude" name="longitude" class="form-control" placeholder="10.70702" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelMonumentForm()">
+            <i class="bi bi-x-lg me-1"></i>Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>{{ editingMonumentId ? 'Update' : 'Create' }}
           </button>
         </div>
       </form>

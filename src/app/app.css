@@ -1,9 +1,20 @@
+/* FIXED: Added flexbox layout for sticky footer */
 body,
 :host {
   font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
   background: #030712;
   color: #e5e7eb;
+  /* FIXED: Flexbox layout to push footer to bottom */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
+
+/* FIXED: Main content expands to fill available space */
+main {
+  flex: 1 0 auto;
+}
+
 .main-nav {
   display: flex;
   align-items: center;
@@ -15,12 +26,14 @@ body,
   top: 0;
   z-index: 50;
 }
+
 .main-nav .brand {
   font-weight: 700;
   font-size: 1.1rem;
   text-decoration: none;
   color: #fff;
 }
+
 .main-nav a {
   color: #93c5fd;
   text-decoration: none;

@@ -1,15 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'bootstrap/dist/css/bootstrap.min.css';
+
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: #060b12;
   color: #e2e8f0;
+  /* Flexbox layout for sticky footer */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Design tokens */
@@ -27,12 +33,23 @@ body {
   --shadow-lg: 0 8px 28px -6px rgba(0, 0, 0, 0.55);
 }
 
+/* Main content area should expand to fill available space */
+main {
+  flex: 1 0 auto;
+}
+
+/* Footer should stick to bottom */
+.site-footer {
+  flex-shrink: 0;
+}
+
 .card-surface {
   background: var(--surface-1);
   border: 1px solid var(--surface-2);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
+
 .chip-soft {
   background: rgba(255, 255, 255, 0.08);
   padding: 0.35rem 0.7rem;
@@ -40,6 +57,7 @@ body {
   font-size: 0.7rem;
   letter-spacing: 0.5px;
 }
+
 .glass {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
@@ -52,9 +70,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.1rem;
 }
+
 .fade-in {
   animation: fadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -72,10 +92,12 @@ footer.site-footer {
   background: var(--surface-2);
   color: #94a3b8;
 }
+
 footer.site-footer a {
   color: #e2e8f0;
   text-decoration: none;
 }
+
 footer.site-footer a:hover {
   color: var(--accent);
 }
