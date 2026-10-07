@@ -87,8 +87,12 @@ export class MonumentDetailComponent {
    * Retourne null si aucun commentaire n'a de note.
    * Arrondi à 1 décimale.
    */
+  visibleComments = computed(() =>
+    (this.monument()?.comments ?? []).filter((comment) => comment.etat === 'approuvé')
+  );
+
   avgNote = computed<number | null>(() => {
-    const comments = this.monument()?.comments ?? [];
+    const comments = this.visibleComments();
     const rated = comments.filter((c) => c.note != null);
     if (!rated.length) return null;
     const sum = rated.reduce((s, c) => s + (c.note ?? 0), 0);

@@ -1,7 +1,7 @@
 .container { padding: 24px; max-width: 1320px; margin: 0 auto; }
 .page-header { margin: 0 0 14px; }
 .page-header h2 { margin: 0 0 4px; font-size: clamp(1.4rem,3vw,1.8rem); }
-.page-header .muted { color: #6b7280; margin: 0; }
+.page-header .muted { color: var(--color-muted); margin: 0; }
 
 .grid {
   display: grid;
@@ -26,7 +26,7 @@
 .skeleton-card {
   height: 220px;
   border-radius: 16px;
-  background: linear-gradient(90deg, #1f2937 25%, #374151 37%, #1f2937 63%);
+  background: linear-gradient(90deg, var(--color-surface-alt) 25%, var(--color-border-strong) 37%, var(--color-surface-alt) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.2s infinite;
 }
@@ -40,10 +40,10 @@
 }
 
 .filter-bar {
-  border: 1px solid #1e293b;
+  border: 1px solid var(--color-border);
   border-radius: 18px;
   backdrop-filter: blur(14px);
-  background: rgba(15,23,42,0.65);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   box-shadow: 0 0 0 1px rgba(255,255,255,.03), 0 22px 40px -10px rgba(0,0,0,.5);
 }
 .filter-bar .form-control,

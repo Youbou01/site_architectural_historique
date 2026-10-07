@@ -166,18 +166,15 @@
         </span>
         Commentaires
         <span class="count-badge" aria-label="nombre de commentaires">
-          {{ (monument()!.comments ?? []).length }}
+          {{ visibleComments().length }}
         </span>
       </h3>
 
-      @if ((monument()!.comments ?? []).length) {
+      @if (visibleComments().length) {
 
       <ul class="comments">
-        @for (c of monument()!.comments ?? []; track c?.id ?? $index) {
-        <li class="comment"
-            [class.pending]="c.etat === 'en attente'"
-            [class.approved]="c.etat === 'approuvé'"
-            [class.rejected]="c.etat === 'rejeté'">
+        @for (c of visibleComments(); track c?.id ?? $index) {
+        <li class="comment approved">
           <div class="avatar" [attr.aria-label]="'Avatar ' + c.nom">
             {{ initiales(c.nom) }}
           </div>
@@ -188,16 +185,7 @@
                 <span class="date">• {{ c.date }}</span>
               </div>
               <div class="meta">
-                @if (c.etat) {
-                <span
-                  class="status"
-                  [class.pending]="c.etat === 'en attente'"
-                  [class.rejected]="c.etat === 'rejeté'"
-                  [class.approved]="c.etat === 'approuvé'"
-                >
-                  {{ c.etat }}
-                </span>
-                } @if (c.note) {
+                @if (c.note) {
                 <app-rating-stars [value]="c.note" cssClass="mini" title="Note" />
                 }
               </div>

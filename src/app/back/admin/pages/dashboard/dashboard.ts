@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { PatrimoineService } from '../../../../services/patrimoine.service';
 import { SiteHistorique } from '../../../../models/site-historique';
 import { DecimalPipe } from '@angular/common';
@@ -18,49 +18,28 @@ interface StatsSummary {
   styleUrls: ['./dashboard.css'],
 })
 export class DashboardComponent implements OnInit {
-  stats: StatsSummary | null = null;
-  isLoading = true;
+  stats = signal<StatsSummary | null>(null);
+  isLoading = signal(true);
 
-  constructor(private patrimoineService: PatrimoineService) {}
+  private readonly patrimoineService = inject(PatrimoineService);
 
   ngOnInit() {
     this.loadStats();
   }
 
   loadStats() {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
-    // Trigger load if cache is empty
-    this.patrimoineService.loadAll();
-
-    // Use signal directly - it will update when data loads
-    const sites = this.patrimoineService.patrimoines();
-
-    if (sites.length > 0) {
-      // Data already loaded (from cache)
-      this.stats = this.calculateStats(sites);
-      this.isLoading = false;
-    } else {
-      // Wait for data to load
-      const checkData = setInterval(() => {
-        const currentSites = this.patrimoineService.patrimoines();
-        if (currentSites.length > 0) {
-          clearInterval(checkData);
-          this.stats = this.calculateStats(currentSites);
-          this.isLoading = false;
-        }
-      }, 100);
-
-      // Timeout fallback after 5 seconds
-      setTimeout(() => {
-        clearInterval(checkData);
-        if (this.isLoading) {
-          const currentSites = this.patrimoineService.patrimoines();
-          this.stats = this.calculateStats(currentSites);
-          this.isLoading = false;
-        }
-      }, 5000);
-    }
+    this.patrimoineService.loadAll().subscribe({
+      next: (sites) => {
+        this.stats.set(this.calculateStats(sites));
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.stats.set(null);
+        this.isLoading.set(false);
+      },
+    });
   }
 
   private calculateStats(sites: SiteHistorique[]): StatsSummary {
@@ -70,49 +49,42 @@ export class DashboardComponent implements OnInit {
     let ratingSum = 0;
     let ratingCount = 0;
 
-    sites.forEach((site: SiteHistorique) => {
-      // FIXED: Count comments from both site AND monuments
-      const siteComments = site.comments || [];
+    sites.forEach((site) => {
+      const siteComments = site.comments ?? [];
       totalComments += siteComments.length;
+      totalMonuments += (site.monuments ?? []).length;
 
-      // Count monuments
-      totalMonuments += (site.monuments || []).length;
+      siteComments.forEach((comment) => {
+        if (comment.etat === 'approuvé' && typeof comment.note === 'number') {
+          ratingSum += comment.note;
+          ratingCount++;
+        }
+      });
 
-      // Add monument comments
-      (site.monuments || []).forEach((monument) => {
-        const monumentComments = monument.comments || [];
+      (site.monuments ?? []).forEach((monument) => {
+        const monumentComments = monument.comments ?? [];
         totalComments += monumentComments.length;
 
-        // Include monument ratings
-        monumentComments.forEach((c) => {
-          if (typeof c.note === 'number') {
-            ratingSum += c.note;
+        monumentComments.forEach((comment) => {
+          if (comment.etat === 'approuvé' && typeof comment.note === 'number') {
+            ratingSum += comment.note;
             ratingCount++;
           }
         });
-      });
-
-      // Count site ratings
-      siteComments.forEach((c) => {
-        if (typeof c.note === 'number') {
-          ratingSum += c.note;
-          ratingCount++;
-        }
       });
     });
 
     const avgRating = ratingCount > 0 ? +(ratingSum / ratingCount).toFixed(2) : null;
 
-    // FIXED: Include monument comments in top sites calculation
     const topSitesByComments = sites
-      .map((s: SiteHistorique) => {
-        const siteCommentsCount = (s.comments || []).length;
-        const monumentCommentsCount = (s.monuments || []).reduce(
-          (sum, m) => sum + (m.comments || []).length,
+      .map((site) => {
+        const siteCommentsCount = (site.comments ?? []).length;
+        const monumentCommentsCount = (site.monuments ?? []).reduce(
+          (sum, monument) => sum + (monument.comments ?? []).length,
           0
         );
         return {
-          site: s,
+          site,
           comments: siteCommentsCount + monumentCommentsCount,
         };
       })

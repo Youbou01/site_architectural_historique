@@ -6,7 +6,7 @@
       "description": "Située à une soixantaine de kilomètres de Sousse, El Jem illustre le lien entre la Tunisie et l’Empire romain. Un colisée imposant, des villas d’aristocrates, une tradition ancestrale de la mosaïque… Découvrez l’héritage de cette perle du Sahel",
       "origineHistorique": "Antiquité romaine",
       "photoCarousel": [
-        "images/eljem_1.jpg"
+        "/images/eljem_1.jpg"
       ],
       "latitude": 35.3006,
       "longitude": 10.7069,
@@ -46,8 +46,8 @@
           "description": "Amphithéâtre romain du IIIe siècle, capable d'accueillir des milliers de spectateurs, classé aussi au patrimoine mondial de l'UNESCO.",
           "origineHistorique": "Antiquité romaine",
           "photoCarousel": [
-            "images/eljem_amphi_1.jpg",
-            "images/eljem_amphi_2.jpg"
+            "/images/eljem_amphi_1.jpg",
+            "/images/eljem_amphi_2.jpg"
           ],
           "latitude": 35.30062,
           "longitude": 10.70702,
@@ -103,6 +103,22 @@
               "date": "2025-10-05",
               "note": 5,
               "etat": "approuvé"
+            },
+            {
+              "id": "c-place-001-1767380729938",
+              "nom": "2026",
+              "message": "2026",
+              "date": "2026-01-02",
+              "note": "5",
+              "etat": "approuvé"
+            },
+            {
+              "id": "c-mon-001-01-1790880787516",
+              "nom": "ayoub",
+              "message": "best place i ever visited",
+              "date": "2026-10-01",
+              "note": "4",
+              "etat": "approuvé"
             }
           ],
           "stats": {
@@ -121,9 +137,9 @@
       "description": "Site archéologique punico-romain très complet avec temples, forum, théâtre et capitole.",
       "origineHistorique": "Antiquité romaine",
       "photoCarousel": [
-        "images/dougga_1.jpg",
-        "images/dougga_2.jpg",
-        "images/dougga_3.jpg"
+        "/images/dougga_1.jpg",
+        "/images/dougga_2.jpg",
+        "/images/dougga_3.jpg"
       ],
       "latitude": 36.42,
       "longitude": 9.22,
@@ -158,8 +174,8 @@
           "description": "Théâtre romain remarquablement bien conservé, situé au cœur du site.",
           "origineHistorique": "Antiquité romaine",
           "photoCarousel": [
-            "images/dougga_theatre_1.jpg",
-            "images/dougga_theatre_2.jpg"
+            "/images/dougga_theatre_1.jpg",
+            "/images/dougga_theatre_2.jpg"
           ],
           "latitude": 36.4189,
           "longitude": 9.2198,
@@ -225,14 +241,6 @@
               "date": "2025-11-24",
               "note": "1",
               "etat": "pending"
-            },
-            {
-              "id": "c-place-002-1764329739396",
-              "nom": "hahahaa",
-              "message": "dkodkdozkdzd",
-              "date": "2025-11-28",
-              "note": "2",
-              "etat": "en attente"
             }
           ],
           "stats": {
@@ -247,8 +255,8 @@
           "description": "Temple plusieursfois restauré dédié aux grandes divinités romaines.",
           "origineHistorique": "Antiquité romaine",
           "photoCarousel": [
-            "images/dougga_capitole_1.jpg",
-            "images/dougga_capitole_2.jpg"
+            "/images/dougga_capitole_1.jpg",
+            "/images/dougga_capitole_2.jpg"
           ],
           "latitude": 36.4192,
           "longitude": 9.2201,
@@ -315,8 +323,8 @@
       "description": "Début de l'aqueduc romain qui alimentait la ville de Carthage en eau, remarquable vestige d'ingénierie.",
       "origineHistorique": "Romaine (IIe siècle)",
       "photoCarousel": [
-        "images/zaghouan_aqueduc_1.webp",
-        "images/zaghouan_aqueduc_2.JPG"
+        "/images/zaghouan_aqueduc_1.webp",
+        "/images/zaghouan_aqueduc_2.JPG"
       ],
       "latitude": 36.4011,
       "longitude": 10.1393,
@@ -351,8 +359,8 @@
           "description": "Vestiges impressionnants d'une structure qui transportait l'eau sur des dizaines de kilomètres.",
           "origineHistorique": "Romaine",
           "photoCarousel": [
-            "images/zaghouan_aqueduc_vestige_1.jpg",
-            "images/zaghouan_aqueduc_vestige_2.jpg"
+            "/images/zaghouan_aqueduc_vestige_1.jpg",
+            "/images/zaghouan_aqueduc_vestige_2.jpg"
           ],
           "latitude": 36.4012,
           "longitude": 10.1391,
@@ -419,9 +427,9 @@
       "description": "Ancienne cité phénicienne et romaine, riche en ruines antiques, nécropoles et sites archéologiques.",
       "origineHistorique": "Phénicienne puis romaine",
       "photoCarousel": [
-        "images/carthage_1.png",
-        "images/carthage_2.jpg",
-        "images/carthage_3.png"
+        "/images/carthage_1.png",
+        "/images/carthage_2.jpg",
+        "/images/carthage_3.png"
       ],
       "latitude": 36.8529,
       "longitude": 10.3233,
@@ -461,8 +469,8 @@
           "description": "Plus grands thermes romains d'Afrique du Nord, vaste complexe de ruines.",
           "origineHistorique": "Romaine",
           "photoCarousel": [
-            "images/therme_antonin_1.jpg",
-            "images/thermes_antonin_2.jpg"
+            "/images/therme_antonin_1.jpg",
+            "/images/thermes_antonin_2.jpg"
           ],
           "latitude": 36.8571,
           "longitude": 10.3239,
@@ -534,9 +542,9 @@
           "description": "Site funéraire puniques avec stèles et urnes, témoin des rites anciens.",
           "origineHistorique": "Phénicienne",
           "photoCarousel": [
-            "images/tophet_1.webp",
-            "images/tophet_2.webp",
-            "images/tophet_3.webp"
+            "/images/tophet_1.webp",
+            "/images/tophet_2.webp",
+            "/images/tophet_3.webp"
           ],
           "latitude": 36.852,
           "longitude": 10.3225,
@@ -600,10 +608,10 @@
           "description": "Vestige romain utilisé pour spectacles et représentations.",
           "origineHistorique": "Romaine",
           "photoCarousel": [
-            "images/amphi_carthage_1.webp",
-            "images/amphi_carthage_2.webp",
-            "images/amphi_carthage_3.webp",
-            "images/amphi_carthage_4.webp"
+            "/images/amphi_carthage_1.webp",
+            "/images/amphi_carthage_2.webp",
+            "/images/amphi_carthage_3.webp",
+            "/images/amphi_carthage_4.webp"
           ],
           "latitude": 36.8518,
           "longitude": 10.323,
@@ -670,9 +678,9 @@
       "description": "Ancienne médina classée, riche en ruelles, souks, mosquées et maisons traditionnelles.",
       "origineHistorique": "Islamique médiévale",
       "photoCarousel": [
-        "images/medina_tunis_1.jpg",
-        "images/medina_tunis_2.jpg",
-        "images/medina_tunis_3.jpg"
+        "/images/medina_tunis_1.jpg",
+        "/images/medina_tunis_2.jpg",
+        "/images/medina_tunis_3.jpg"
       ],
       "latitude": 36.8065,
       "longitude": 10.1815,
@@ -714,8 +722,8 @@
           "description": "Centre religieux et éducatif historique de la médina, avec une architecture remarquable.",
           "origineHistorique": "Islamique médiévale",
           "photoCarousel": [
-            "images/zitouna_1.jpg",
-            "images/zitouna_2.jpg"
+            "/images/zitouna_1.jpg",
+            "/images/zitouna_2.jpg"
           ],
           "latitude": 36.806,
           "longitude": 10.181,
@@ -779,9 +787,9 @@
           "description": "Musée régional présentant la vie traditionnelle tunisienne et l'architecture résidentielle.",
           "origineHistorique": "Ottomane",
           "photoCarousel": [
-            "images/dar_ben_abdallah_1.jpg",
-            "images/dar_ben_abdallah_2.jpg",
-            "images/dar_ben_abdallah_3.jpg"
+            "/images/dar_ben_abdallah_1.jpg",
+            "/images/dar_ben_abdallah_2.jpg",
+            "/images/dar_ben_abdallah_3.jpg"
           ],
           "latitude": 36.8058,
           "longitude": 10.1813,
@@ -848,9 +856,9 @@
       "description": "Parc national connu pour son lac, site Ramsar et inscrit au patrimoine mondial, refuge pour de nombreuses espèces d'oiseaux migrateurs.",
       "origineHistorique": "Naturel (géologique et écologique)",
       "photoCarousel": [
-        "images/ichkeul_1.jpg",
-        "images/ichkeul_2.jpg",
-        "images/ichkeul_lake_1.jpg"
+        "/images/ichkeul_1.jpg",
+        "/images/ichkeul_2.jpg",
+        "/images/ichkeul_lake_1.jpg"
       ],
       "latitude": 37.2086,
       "longitude": 9.3658,
@@ -885,8 +893,8 @@
           "description": "Zone humide essentielle pour de nombreuses espèces d'oiseaux durant la migration.",
           "origineHistorique": "Naturel",
           "photoCarousel": [
-            "images/ichkeul_3.jpg",
-            "images/ichkeul_lake_2.jpg"
+            "/images/ichkeul_3.jpg",
+            "/images/ichkeul_lake_2.jpg"
           ],
           "latitude": 37.209,
           "longitude": 9.366,
@@ -944,14 +952,6 @@
               "date": "2025-10-04",
               "note": 5,
               "etat": "approuvé"
-            },
-            {
-              "id": "c-place-006-1764327744570",
-              "nom": "youbouKing",
-              "message": "youbouKIng",
-              "date": "2025-11-28",
-              "note": "4",
-              "etat": "en attente"
             }
           ],
           "stats": {
@@ -969,9 +969,9 @@
       "description": "Ville historique avec une médina fortifiée, riche en monuments comme le ribat et la grande mosquée.",
       "origineHistorique": "Islamique médiévale",
       "photoCarousel": [
-        "images/medina_sousse_1.jpg",
-        "images/medina_sousse_2.jpg",
-        "images/medina_sousse_3.webp"
+        "/images/medina_sousse_1.jpg",
+        "/images/medina_sousse_2.jpg",
+        "/images/medina_sousse_3.webp"
       ],
       "latitude": 35.8256,
       "longitude": 10.63699,
@@ -1007,7 +1007,7 @@
           "description": "Forteresse militaire islamique offrant une vue panoramique sur la ville et la mer.",
           "origineHistorique": "Islamique médiévale",
           "photoCarousel": [
-            "images/ribat_sousse_1.jpg"
+            "/images/ribat_sousse_1.jpg"
           ],
           "latitude": 35.8257,
           "longitude": 10.6368,
@@ -1071,7 +1071,7 @@
           "description": "Mosquée historique située dans la médina, remarquable pour son architecture.",
           "origineHistorique": "Islamique médiévale",
           "photoCarousel": [
-            "images/mosque_sousse_1.jpg"
+            "/images/mosque_sousse_1.jpg"
           ],
           "latitude": 35.8259,
           "longitude": 10.6371,
@@ -1131,21 +1131,23 @@
       ]
     },
     {
+      "id": "place-008",
       "nom": "Kairouan",
       "localisation": "Kairouan, Kairouan Governorate",
       "description": "Ville sainte de l'islam en Tunisie, célèbre pour la Grande Mosquée d'Oqba et son patrimoine islamique.",
       "origineHistorique": "Islamique médiévale (VIIIe siècle)",
       "photoCarousel": [
-        "data:image/jpeg;base64,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"
+        "/images/kairouan_1.png",
+        "/images/kairouan_2.webp"
       ],
       "latitude": 35.6781,
       "longitude": 10.0963,
       "categories": [
         "Ville religieuse"
       ],
-      "dateConstruction": "2025-11-28",
-      "estClasse": false,
-      "prixEntree": -10,
+      "dateConstruction": "670-01-01",
+      "estClasse": true,
+      "prixEntree": 0,
       "ouvert": true,
       "horaires": [
         "Toute la journée"
@@ -1171,9 +1173,9 @@
           "description": "L'un des plus anciens lieux de culte de l'Islam en Afrique du Nord, centre spirituel et éducatif.",
           "origineHistorique": "Islamique médiévale",
           "photoCarousel": [
-            "images/oqba_0.jpg",
-            "images/oqba_1.jpg",
-            "images/oqba_2.jpg"
+            "/images/oqba_0.jpg",
+            "/images/oqba_1.jpg",
+            "/images/oqba_2.jpg"
           ],
           "latitude": 35.678,
           "longitude": 10.096,
@@ -1239,8 +1241,7 @@
             "noteMoyenne": 4.6
           }
         }
-      ],
-      "id": "place-008"
+      ]
     },
     {
       "id": "place-009",
@@ -1249,8 +1250,8 @@
       "description": "Île méditerranéenne réputée pour ses traditions, artisanat, plages et sites religieux historiques.",
       "origineHistorique": "Arabo-berbère et ottomane",
       "photoCarousel": [
-        "images/djerba_1.jpg",
-        "images/djerba_2.webp"
+        "/images/djerba_1.jpg",
+        "/images/djerba_2.webp"
       ],
       "latitude": 33.8076,
       "longitude": 10.8758,
@@ -1285,8 +1286,8 @@
           "description": "Fort historique situé sur l'île, vestige des périodes ottomane et coloniale.",
           "origineHistorique": "Ottomane",
           "photoCarousel": [
-            "images/fort_ghazi_1.jpg",
-            "images/fort_ghazi_2.jpg"
+            "/images/fort_ghazi_1.jpg",
+            "/images/fort_ghazi_2.jpg"
           ],
           "latitude": 33.8333,
           "longitude": 10.885,
@@ -1342,8 +1343,8 @@
           "description": "L'une des plus anciennes synagogues d'Afrique, lieu de pèlerinage pour la communauté juive.",
           "origineHistorique": "Judaïque ancienne",
           "photoCarousel": [
-            "images/ghriba_1.jpg",
-            "images/ghriba_2.jpg"
+            "/images/ghriba_1.jpg",
+            "/images/ghriba_2.jpg"
           ],
           "latitude": 33.7929,
           "longitude": 10.9131,
@@ -1415,7 +1416,7 @@
           "description": "Ville principale de Djerba, connue pour ses souks, artisanat et architecture blanche.",
           "origineHistorique": "Traditionnelle",
           "photoCarousel": [
-            "images/houmt_souk_1.jpg"
+            "/images/houmt_souk_1.jpg"
           ],
           "latitude": 33.8806,
           "longitude": 10.862,
@@ -1474,86 +1475,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "132f",
-      "nom": "iset2",
-      "localisation": "tt",
-      "description": "",
-      "origineHistorique": "",
-      "photoCarousel": [],
-      "latitude": 0,
-      "longitude": 0,
-      "categories": [
-        "Site archéologique"
-      ],
-      "dateConstruction": null,
-      "estClasse": false,
-      "prixEntree": 0,
-      "ouvert": true,
-      "horaires": [],
-      "visitesGuideesDisponibles": false,
-      "lieuxProches": [],
-      "comments": [],
-      "stats": {
-        "vues": 0,
-        "favoris": 0,
-        "noteMoyenne": 0
-      },
-      "monuments": [
-        {
-          "id": "mon-132f-1764331096506",
-          "nom": "labo204",
-          "localisation": "tt",
-          "adresse": "tt",
-          "description": "",
-          "origineHistorique": "",
-          "photoCarousel": [],
-          "latitude": 0,
-          "longitude": 0,
-          "dateConstruction": null,
-          "estClasse": false,
-          "prixEntree": 0,
-          "ouvert": true,
-          "horaires": [],
-          "categories": [],
-          "visitesGuideesDisponibles": false,
-          "lieuxProches": [],
-          "comments": [],
-          "monuments": [],
-          "stats": {
-            "vues": 0,
-            "favoris": 0,
-            "noteMoyenne": 0
-          }
-        },
-        {
-          "id": "mon-132f-1764331179674",
-          "nom": "labo207",
-          "localisation": "tt",
-          "adresse": "207",
-          "description": "",
-          "origineHistorique": "",
-          "photoCarousel": [],
-          "latitude": 0,
-          "longitude": 0,
-          "dateConstruction": null,
-          "estClasse": false,
-          "prixEntree": 0,
-          "ouvert": true,
-          "horaires": [],
-          "categories": [],
-          "visitesGuideesDisponibles": false,
-          "lieuxProches": [],
-          "comments": [],
-          "monuments": [],
-          "stats": {
-            "vues": 0,
-            "favoris": 0,
-            "noteMoyenne": 0
-          }
-        }
-      ]
     }
   ],
   "admins": [
@@ -1561,13 +1482,13 @@
       "id": "admin-1",
       "username": "admin",
       "email": "admin@patrimoine.tn",
-      "password": "Admin12",
+      "password": "Admin12345",
       "role": "admin",
       "fullName": "Mohamed Administrateur",
       "avatar": "https://i.pravatar.cc/150?u=17",
       "phone": "+216 20 123 456",
       "dateCreated": "2024-01-15T10:00:00.000Z",
-      "dernierLogin": "2025-11-28T12:28:24.408Z",
+      "dernierLogin": "2026-10-07T16:50:09.789Z",
       "isActive": true,
       "type": "admin"
     }

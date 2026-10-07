@@ -145,9 +145,13 @@ export class PatrimoineDetailComponent {
   allComments = computed(() => {
     const p = this.patrimoine();
     if (!p) return [];
-    const patrimoineComments = p.comments ?? [];
-    const monumentComments = (p.monuments ?? []).flatMap(m => m.comments ?? []);
-    return [...patrimoineComments, ...monumentComments];
+
+    const comments = [
+      ...(p.comments ?? []),
+      ...(p.monuments ?? []).flatMap((m) => m.comments ?? []),
+    ];
+
+    return comments.filter((comment) => comment.etat === 'approuvé');
   });
 
   /**
@@ -239,6 +243,10 @@ export class PatrimoineDetailComponent {
   }
 
   // Fonction utilitaire importée pour usage dans le template
+  approvedCommentCount(comments: Commentaire[] | undefined): number {
+    return (comments ?? []).filter((comment) => comment.etat === 'approuvé').length;
+  }
+
   initiales = getInitials;
 
   /**
@@ -297,17 +305,11 @@ export class PatrimoineDetailComponent {
       etat: 'en attente'
     };
 
-    // Create updated patrimoine using immutable pattern for proper signal reactivity
-    let updatedPatrimoine: SiteHistorique;
-    if (p.monuments && p.monuments.length > 0) {
-      // Add to the first monument's comments (as we show aggregated comments from all monuments)
-      const first = p.monuments[0];
-      const updatedFirst = { ...first, comments: [...(first.comments ?? []), comment] };
-      updatedPatrimoine = { ...p, monuments: [updatedFirst, ...p.monuments.slice(1)] };
-    } else {
-      // If no monuments, add to patrimoine itself
-      updatedPatrimoine = { ...p, comments: [...(p.comments ?? []), comment] };
-    }
+    // A comment submitted from the patrimoine page belongs to the patrimoine itself.
+    const updatedPatrimoine: SiteHistorique = {
+      ...p,
+      comments: [...(p.comments ?? []), comment],
+    };
 
     // Optimistically update the local signal for immediate UI feedback
     this.patrimoine.set(updatedPatrimoine);

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Auth } from '../../../../services/auth';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators, FormArray } from '@angular/forms';
@@ -15,6 +15,7 @@ export class LoginComponent {
   private auth = inject(Auth);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
   message = '';
@@ -80,7 +81,8 @@ export class LoginComponent {
 
     // Always login as admin
     this.auth.login(username!, password!).subscribe({
-      next: (user) => {
+      next: () => {
+        this.cdr.markForCheck();
         this.message = 'Connexion réussie !';
         this.isSuccess = true;
         this.isLoading = false;
@@ -95,6 +97,7 @@ export class LoginComponent {
         }, 1000);
       },
       error: (err) => {
+        this.cdr.markForCheck();
         this.message = err.message || 'Échec de la connexion';
         this.isSuccess = false;
         this.isLoading = false;

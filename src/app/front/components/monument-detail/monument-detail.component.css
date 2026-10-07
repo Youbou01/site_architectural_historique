@@ -1,16 +1,16 @@
-:root {
-  --bg: #0f172a;
-  --bg-soft: #0b1220;
-  --panel: #0f172a;
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --border: #1f2937;
-  --accent: #2563eb;
-  --accent-2: #22c55e;
-  --danger: #ef4444;
-  --chip: #1e293b;
-  --chip-border: #334155;
-  --glow: 0 0 0 1px rgba(37, 99, 235, 0.15), 0 8px 30px rgba(2, 8, 23, 0.6);
+:host {
+  --bg: var(--color-surface);
+  --bg-soft: var(--color-surface-alt);
+  --panel: var(--color-surface);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --border: var(--color-border);
+  --accent: var(--color-accent);
+  --accent-2: var(--color-success);
+  --danger: var(--color-danger);
+  --chip: var(--color-surface-alt);
+  --chip-border: var(--color-border-strong);
+  --glow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 16%, transparent), var(--color-shadow);
 }
 
 .monument-detail {
@@ -60,8 +60,8 @@
   letter-spacing: 0.2px;
 }
 .fav-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 15%, transparent);
   color: var(--text);
   display: inline-flex;
   align-items: center;
@@ -87,7 +87,7 @@
   fill: currentColor;
 }
 .fav-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--color-text) 12%, transparent);
 }
 .chips {
   display: flex;
@@ -133,7 +133,7 @@
 .rating-summary .stars svg {
   width: 18px;
   height: 18px;
-  color: #334155;
+  color: var(--color-border-strong);
 }
 .rating-summary .stars svg.filled {
   color: #fbbf24;
@@ -196,7 +196,7 @@
   align-items: center;
   gap: 8px;
   background: var(--bg-soft);
-  border: 1px solid #14213a;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 10px;
 }
@@ -226,7 +226,7 @@
   grid-template-columns: auto 1fr;
   gap: 10px;
   background: var(--bg-soft);
-  border: 1px solid #14213a;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 10px;
 }
@@ -236,7 +236,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #1e293b, #0ea5e9);
+  background: linear-gradient(135deg, var(--color-surface-alt), var(--color-accent-alt));
   color: white;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -297,7 +297,7 @@
 .stars svg {
   width: 16px;
   height: 16px;
-  color: #334155;
+  color: var(--color-border-strong);
 }
 .stars svg.filled {
   color: #fbbf24;
@@ -313,7 +313,7 @@
   aspect-ratio: 16/10;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #14213a;
+  border: 1px solid var(--color-border);
 }
 .map-frame iframe {
   position: absolute;
@@ -393,7 +393,7 @@
 }
 
 .comment-form-container {
-  background: rgba(30, 41, 59, 0.6);
+  background: color-mix(in srgb, var(--color-surface-alt) 90%, transparent);
   border: 1px solid rgba(71, 85, 105, 0.4);
   border-radius: 12px;
   padding: 24px;
@@ -407,7 +407,7 @@
 .comment-form label {
   display: block;
   margin-bottom: 8px;
-  color: #cbd5e1;
+  color: var(--color-text);
   font-weight: 500;
 }
 
@@ -420,7 +420,7 @@
 .comment-form select {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(15, 23, 42, 0.8);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   border: 1px solid rgba(71, 85, 105, 0.4);
   border-radius: 8px;
   color: #e2e8f0;
@@ -469,7 +469,7 @@
 
 .btn-cancel {
   background: rgba(71, 85, 105, 0.4);
-  color: #cbd5e1;
+  color: var(--color-text);
 }
 
 .btn-cancel:hover {

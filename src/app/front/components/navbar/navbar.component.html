@@ -20,17 +20,6 @@
           <span>Monuments</span>
         </a>
       </li>
-      @if (isAuthenticated()) {
-      <li>
-        <a routerLink="/admin" [class.active]="isActive('/admin')">
-          <span>Dashboard</span>
-        </a>
-      </li>
-      } @else {
-      <li>
-        <span class="disabled">Dashboard</span>
-      </li>
-      }
     </ul>
     <div class="actions">
       <button

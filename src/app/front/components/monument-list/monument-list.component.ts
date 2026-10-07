@@ -49,7 +49,7 @@ export class MonumentListComponent {
         photo: m.photoCarousel?.[0],
         estClasse: m.estClasse,
         ouvert: m.ouvert,
-        comments: m.comments?.length || 0,
+        comments: (m.comments ?? []).filter((comment) => comment.etat === 'approuvé').length,
       }))
     );
   });

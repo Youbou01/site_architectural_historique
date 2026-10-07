@@ -1,175 +1,141 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SiteHistorique } from '../models/site-historique';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap, shareReplay, finalize } from 'rxjs';
 
 /**
  * Service métier pour la gestion des patrimoines (sites historiques racines) et de leurs monuments.
- *
- * Responsabilités:
- * - Récupération des données patrimoniales depuis l'API REST
- * - Gestion du cache en mémoire via des signaux Angular
- * - Gestion des états de chargement et d'erreur
- * - Stockage du patrimoine actuellement consulté pour optimiser la navigation
- * - CRUD complet: Create, Read, Update, Delete
  */
 @Injectable({ providedIn: 'root' })
 export class PatrimoineService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:3000/patrimoines';
+  private loadRequest: Observable<SiteHistorique[]> | null = null;
 
-  // Signal cache: liste complète des sites racine chargés depuis l'API
   readonly patrimoines = signal<SiteHistorique[]>([]);
-
-  // Signal indiquant si une requête HTTP est en cours
   readonly loading = signal<boolean>(false);
-
-  // Signal contenant le message d'erreur en cas d'échec, null sinon
   readonly error = signal<string | null>(null);
-
-  // Cache du patrimoine actuellement consulté en détail (inclut les monuments complets)
-  // Permet d'éviter de recharger les données lors de la navigation vers un monument enfant
   readonly currentPatrimoine = signal<SiteHistorique | null>(null);
 
   /**
-   * Charge tous les patrimoines depuis l'API si le cache est vide.
-   * Implémente une stratégie de mémoisation simple pour éviter les requêtes redondantes.
-   * Met à jour les signaux loading, error et patrimoines selon le résultat.
+   * Charge les patrimoines (avec cache) et déclenche la requête immédiatement.
+   *
+   * Les Observables HTTP sont "froids" : sans subscribe(), aucune requête n'est envoyée.
+   * La requête est donc démarrée ici, puis partagée (shareReplay) afin que les composants
+   * qui ignorent la valeur de retour (liste, CRUD...) comme ceux qui font
+   * `.subscribe()` (dashboard, modération) obtiennent tous les données.
    */
-  loadAll() {
-    // Simple mémoisation: ne recharge pas si des données sont déjà présentes
-    if (this.patrimoines().length) return;
+  loadAll(): Observable<SiteHistorique[]> {
+    const cached = this.patrimoines();
+    if (cached.length) {
+      return of(cached);
+    }
+
+    if (this.loadRequest) {
+      return this.loadRequest;
+    }
 
     this.loading.set(true);
-    this.http.get<SiteHistorique[]>(this.baseUrl).subscribe({
-      next: (data) => {
-        this.patrimoines.set(data);
+    this.error.set(null);
+
+    const request$ = this.http.get<SiteHistorique[]>(this.baseUrl).pipe(
+      tap({
+        next: (data) => this.patrimoines.set(data),
+        error: (err) => {
+          this.error.set(
+            'Impossible de charger les patrimoines. Vérifiez que json-server tourne (npm run api).'
+          );
+          console.error(err);
+        },
+      }),
+      finalize(() => {
         this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set('Impossible de charger les patrimoines');
-        console.error(err);
-        this.loading.set(false);
-      },
-    });
+        this.loadRequest = null;
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.loadRequest = request$;
+    // Démarre la requête maintenant ; l'erreur est déjà gérée dans tap().
+    request$.subscribe({ error: () => {} });
+
+    return request$;
   }
 
-  /**
-   * Récupère un patrimoine spécifique par son ID, incluant tous ses monuments.
-   * Retourne un Observable pour permettre aux composants de gérer la souscription.
-   *
-   * @param id - Identifiant unique du patrimoine à récupérer
-   * @returns Observable émettant le patrimoine complet avec ses monuments
-   */
-  getById(id: string) {
+  getById(id: string): Observable<SiteHistorique> {
     return this.http.get<SiteHistorique>(`${this.baseUrl}/${id}`);
   }
 
-  /**
-   * Ajoute un nouveau patrimoine à la base de données.
-   * Met à jour automatiquement le cache local après succès.
-   *
-   * @param patrimoineData - Données du nouveau patrimoine (sans ID, généré côté serveur)
-   * @returns Observable émettant le patrimoine créé avec son ID
-   */
   addPatrimoine(patrimoineData: Partial<SiteHistorique>): Observable<SiteHistorique> {
     this.loading.set(true);
     return this.http.post<SiteHistorique>(this.baseUrl, patrimoineData).pipe(
       tap({
         next: (newPatrimoine) => {
-          // Ajoute le nouveau patrimoine au cache local
-          const current = this.patrimoines();
-          this.patrimoines.set([...current, newPatrimoine]);
-          this.loading.set(false);
+          this.patrimoines.set([...this.patrimoines(), newPatrimoine]);
           this.error.set(null);
         },
         error: (err) => {
-          this.error.set('Impossible d\'ajouter le patrimoine');
+          this.error.set("Impossible d'ajouter le patrimoine");
           console.error(err);
-          this.loading.set(false);
-        }
-      })
+        },
+      }),
+      finalize(() => this.loading.set(false))
     );
   }
 
-  /**
-   * Met à jour un patrimoine existant.
-   * Actualise le cache local pour refléter les modifications.
-   *
-   * @param id - Identifiant du patrimoine à mettre à jour
-   * @param patrimoineData - Données partielles ou complètes à mettre à jour
-   * @returns Observable émettant le patrimoine mis à jour
-   */
-  updatePatrimoine(id: string, patrimoineData: Partial<SiteHistorique>): Observable<SiteHistorique> {
+  updatePatrimoine(
+    id: string,
+    patrimoineData: Partial<SiteHistorique>
+  ): Observable<SiteHistorique> {
     this.loading.set(true);
     return this.http.put<SiteHistorique>(`${this.baseUrl}/${id}`, patrimoineData).pipe(
       tap({
         next: (updatedPatrimoine) => {
-          // Met à jour le patrimoine dans le cache local
           const current = this.patrimoines();
-          const index = current.findIndex(p => p.id === id);
+          const index = current.findIndex((p) => p.id === id);
           if (index !== -1) {
             const updated = [...current];
             updated[index] = updatedPatrimoine;
             this.patrimoines.set(updated);
           }
 
-          // Met à jour currentPatrimoine si c'est celui en cours de consultation
           if (this.currentPatrimoine()?.id === id) {
             this.currentPatrimoine.set(updatedPatrimoine);
           }
 
-          this.loading.set(false);
           this.error.set(null);
         },
         error: (err) => {
           this.error.set('Impossible de mettre à jour le patrimoine');
           console.error(err);
-          this.loading.set(false);
-        }
-      })
+        },
+      }),
+      finalize(() => this.loading.set(false))
     );
   }
 
-  /**
-   * Supprime un patrimoine de la base de données.
-   * Retire automatiquement l'élément du cache local après succès.
-   *
-   * @param id - Identifiant du patrimoine à supprimer
-   * @returns Observable émettant void ou le patrimoine supprimé selon l'API
-   */
-  deletePatrimoine(id: string): Observable<any> {
+  deletePatrimoine(id: string): Observable<unknown> {
     this.loading.set(true);
     return this.http.delete(`${this.baseUrl}/${id}`).pipe(
       tap({
         next: () => {
-          // Retire le patrimoine du cache local
-          const current = this.patrimoines();
-          this.patrimoines.set(current.filter(p => p.id !== id));
-
-          // Nettoie currentPatrimoine si c'est celui qui a été supprimé
+          this.patrimoines.set(this.patrimoines().filter((p) => p.id !== id));
           if (this.currentPatrimoine()?.id === id) {
             this.currentPatrimoine.set(null);
           }
-
-          this.loading.set(false);
           this.error.set(null);
         },
         error: (err) => {
           this.error.set('Impossible de supprimer le patrimoine');
           console.error(err);
-          this.loading.set(false);
-        }
-      })
+        },
+      }),
+      finalize(() => this.loading.set(false))
     );
   }
 
-  /**
-   * Force le rechargement complet des patrimoines depuis l'API.
-   * Utile après des opérations de modification pour garantir la synchronisation.
-   */
-  forceReload() {
+  forceReload(): Observable<SiteHistorique[]> {
     this.patrimoines.set([]);
-    this.loadAll();
+    return this.loadAll();
   }
 }

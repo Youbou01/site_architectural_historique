@@ -54,7 +54,7 @@
         </label>
         <select class="form-select" [(ngModel)]="selectedSiteId">
           <option value="">All Sites</option>
-          @for (site of sites; track site.id) {
+          @for (site of sites(); track site.id) {
             <option [value]="site.id">
               {{ site.nom }} ({{ getCommentsCountForSite(site.id) }} comments)
             </option>
@@ -122,12 +122,12 @@
         </div>
 
         <div class="comment-actions">
-          @if(item.comment.etat !== 'approuvé') {
+          @if(item.comment.etat === 'en attente') {
             <button (click)="approve(item)" class="btn btn-sm btn-success">
               <i class="bi bi-check-lg"></i> Approve
             </button>
           }
-          @if(item.comment.etat !== 'rejeté') {
+          @if(item.comment.etat === 'en attente') {
             <button (click)="reject(item)" class="btn btn-sm btn-warning">
               <i class="bi bi-x-lg"></i> Reject
             </button>

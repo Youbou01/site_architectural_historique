@@ -41,6 +41,17 @@ app-root {
   --shadow-lg: 0 8px 28px -6px rgba(0, 0, 0, 0.55);
 }
 
+:root[data-theme='light'] {
+  --surface-0: #f5ede3;
+  --surface-1: #fffaf4;
+  --surface-2: #e2d6c8;
+  --accent: #c8572b;
+  --accent-secondary: #16835f;
+  --shadow-sm: 0 2px 4px -2px rgba(89, 62, 35, 0.10);
+  --shadow-md: 0 4px 12px -2px rgba(89, 62, 35, 0.12);
+  --shadow-lg: 0 8px 28px -6px rgba(89, 62, 35, 0.16);
+}
+
 .card-surface {
   background: var(--surface-1);
   border: 1px solid var(--surface-2);

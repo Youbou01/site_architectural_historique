@@ -17,7 +17,7 @@
 .carousel.shell.framed {
   padding: 8px;
   border-radius: calc(var(--radius) + 6px);
-  background: linear-gradient(145deg,#0f172a,#1e293b);
+  background: linear-gradient(145deg, var(--color-surface), var(--color-surface-alt));
   box-shadow: 0 10px 34px -10px rgba(0,0,0,.55);
 }
 
@@ -88,7 +88,7 @@
 .progress {
   position: relative;
   height: 4px;
-  background: #1e293b;
+  background: var(--color-surface-alt);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -111,10 +111,10 @@
 }
 .nav.primary .btn {
   pointer-events: auto;
-  background: rgba(15,23,42,.55);
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,.08);
-  color: #e5e7eb;
+  color: var(--color-text);
   width: 46px;
   height: 46px;
   display: grid;
@@ -164,9 +164,9 @@
   height: var(--thumb-size);
   border-radius: 12px;
   overflow: hidden;
-  background: #1e293b;
+  background: var(--color-surface-alt);
   cursor: pointer;
-  border: 1px solid #334155;
+  border: 1px solid var(--color-border-strong);
   padding: 0;
 }
 .thumb img {
@@ -191,13 +191,13 @@
 .more-indicator {
   display: grid;
   place-items: center;
-  background: #1e293b;
-  color: #94a3b8;
+  background: var(--color-surface-alt);
+  color: var(--color-muted);
   font-size: .8rem;
   padding: 0 10px;
   border-radius: 10px;
   min-width: 56px;
-  border: 1px solid #334155;
+  border: 1px solid var(--color-border-strong);
 }
 
 /* Variants */
@@ -227,12 +227,12 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--color-surface);
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--color-border-strong);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--color-muted);
 }

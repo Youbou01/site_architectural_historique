@@ -61,7 +61,7 @@
           <span class="flag" [class.good]="m.ouvert" [class.bad]="!m.ouvert">{{
             m.ouvert ? 'Ouvert' : 'Fermé'
           }}</span>
-          @if (m.estClasse) { <span class="flag badge">Classé</span> } @if (m.comments) {
+          @if (m.estClasse) { <span class="flag badge">Classé</span> } @if (m.comments > 0) {
           <span class="flag comments">{{ m.comments }} avis</span> }
         </div>
       </div>

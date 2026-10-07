@@ -118,8 +118,8 @@
 }
 
 .fav-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
   color: var(--color-text);
   display: inline-flex;
   align-items: center;

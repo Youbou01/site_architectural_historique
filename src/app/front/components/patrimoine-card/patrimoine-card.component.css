@@ -3,14 +3,14 @@
   flex-direction: column;
   border-radius: 18px;
   overflow: hidden;
-  background: #0f172a;
-  color: #e5e7eb;
+  background: var(--color-surface);
+  color: var(--color-text);
   position: relative;
   box-shadow: 0 14px 32px -8px rgba(0,0,0,.6);
   text-decoration: none;
   transition: transform .5s cubic-bezier(.4,0,.2,1), box-shadow .4s;
   outline: 0;
-  border: 1px solid #1f2937;
+  border: 1px solid var(--color-border);
 }
 .patrimoine-card:hover {
   transform: translateY(-6px);
@@ -23,7 +23,7 @@
 .image-wrapper {
   position: relative;
   aspect-ratio: 16/10;
-  background: #1e293b;
+  background: var(--color-surface-alt);
   overflow: hidden;
 }
 .image-wrapper img {
@@ -84,7 +84,7 @@
   gap: 6px;
   margin: 0;
   font-size: .7rem;
-  color: #94a3b8;
+  color: var(--color-muted);
   letter-spacing: .3px;
 }
 .location svg { width: 14px; height: 14px; color: var(--color-accent-alt); }

@@ -4,6 +4,7 @@ import { PatrimoineDetailComponent } from './front/components/patrimoine-detail/
 import { MonumentDetailComponent } from './front/components/monument-detail/monument-detail.component';
 import { MonumentListComponent } from './front/components/monument-list/monument-list.component';
 import { FavoritesComponent } from './front/components/favorites/favorites.component';
+import { RenderMode, ServerRoute } from '@angular/ssr';
 
 // Import des composants admin
 import { LoginComponent } from './back/admin/pages/login/login';
@@ -15,7 +16,7 @@ import { ChangePasswordComponent } from './back/admin/pages/change-password/chan
 import { AdminLayout } from './back/admin/admin-layout/admin-layout';
 import { AuthGuard } from './back/core/guards/auth-guard';
 import { AdminGuard } from './back/core/guards/admin-guard';
-
+export const serverRoutes: ServerRoute[] = [{ path: '**', renderMode: RenderMode.Client }];
 export const routes: Routes = [
   // Routes publiques (frontend)
   { path: '', redirectTo: 'patrimoines', pathMatch: 'full' },

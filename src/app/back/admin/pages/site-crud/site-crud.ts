@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { PatrimoineService } from '../../../../services/patrimoine.service';
 import { Router, RouterLink } from '@angular/router';
 import { SiteHistorique } from '../../../../models/site-historique';
@@ -14,7 +14,12 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./site-crud.css'],
 })
 export class SiteCrudComponent implements OnInit {
-  sites: SiteHistorique[] = [];
+  private cdr = inject(ChangeDetectorRef);
+
+  /** Source de vérité = signal du service (toujours à jour, y compris en mode zoneless). */
+  get sites(): SiteHistorique[] {
+    return this.patrimoineService.patrimoines();
+  }
   showForm = false;
   editingId: string | null = null;
   searchTerm = '';
@@ -71,31 +76,10 @@ export class SiteCrudComponent implements OnInit {
   }
 
   load(): void {
-    // Trigger load if cache is empty
-    this.patrimoineService.loadAll();
-
-    // Use signal directly - it will update when data loads
-    const sites = this.patrimoineService.patrimoines();
-
-    if (sites.length > 0) {
-      // Data already loaded (from cache)
-      this.sites = sites;
-    } else {
-      // Wait for data to load
-      const checkData = setInterval(() => {
-        const currentSites = this.patrimoineService.patrimoines();
-        if (currentSites.length > 0) {
-          clearInterval(checkData);
-          this.sites = currentSites;
-        }
-      }, 100);
-
-      // Timeout fallback after 5 seconds
-      setTimeout(() => {
-        clearInterval(checkData);
-        this.sites = this.patrimoineService.patrimoines();
-      }, 5000);
-    }
+    // Déclenche le chargement si le cache est vide ; `sites` se met à jour via le signal du service.
+    this.patrimoineService.loadAll().subscribe({
+      error: () => this.cdr.markForCheck(),
+    });
   }
 
   getCategories(): string[] {
@@ -255,6 +239,7 @@ export class SiteCrudComponent implements OnInit {
     if (this.editingId) {
       this.patrimoineService.updatePatrimoine(this.editingId, siteData).subscribe({
         next: () => {
+          this.cdr.markForCheck();
           alert('Site updated successfully!');
           this.showForm = false;
           this.load();
@@ -267,6 +252,7 @@ export class SiteCrudComponent implements OnInit {
     } else {
       this.patrimoineService.addPatrimoine(siteData).subscribe({
         next: () => {
+          this.cdr.markForCheck();
           alert('Site added successfully!');
           this.showForm = false;
           this.load();
@@ -288,6 +274,7 @@ export class SiteCrudComponent implements OnInit {
 
     this.patrimoineService.deletePatrimoine(id).subscribe({
       next: () => {
+        this.cdr.markForCheck();
         alert('Site deleted successfully!');
         this.load();
       },
@@ -457,18 +444,16 @@ export class SiteCrudComponent implements OnInit {
 
     this.patrimoineService.updatePatrimoine(this.selectedSite.id, updatedSite).subscribe({
       next: () => {
+        this.cdr.markForCheck();
         alert(
           this.editingMonumentId ? 'Monument updated successfully!' : 'Monument added successfully!'
         );
         this.showMonumentForm = false;
-        this.load();
-        // Refresh selected site
-        setTimeout(() => {
-          const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
-          if (refreshedSite) {
-            this.selectedSite = refreshedSite;
-          }
-        }, 500);
+        // Refresh selected site (le signal du service est déjà à jour)
+        const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
+        if (refreshedSite) {
+          this.selectedSite = refreshedSite;
+        }
       },
       error: (err) => {
         console.error('Error saving monument:', err);
@@ -498,15 +483,13 @@ export class SiteCrudComponent implements OnInit {
 
     this.patrimoineService.updatePatrimoine(this.selectedSite.id, updatedSite).subscribe({
       next: () => {
+        this.cdr.markForCheck();
         alert('Monument deleted successfully!');
-        this.load();
-        // Refresh selected site
-        setTimeout(() => {
-          const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
-          if (refreshedSite) {
-            this.selectedSite = refreshedSite;
-          }
-        }, 500);
+        // Refresh selected site (le signal du service est déjà à jour)
+        const refreshedSite = this.sites.find((s) => s.id === this.selectedSite?.id);
+        if (refreshedSite) {
+          this.selectedSite = refreshedSite;
+        }
       },
       error: (err) => {
         console.error('Error deleting monument:', err);

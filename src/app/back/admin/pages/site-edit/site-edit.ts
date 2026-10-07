@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PatrimoineService } from '../../../../services/patrimoine.service';
 import { SiteHistorique } from '../../../../models/site-historique';
@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./site-edit.css']
 })
 export class SiteEditComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   editingId?: string;
 
   formData = {
@@ -62,6 +63,7 @@ export class SiteEditComponent implements OnInit {
           latitude: site.latitude || 0,
           longitude: site.longitude || 0
         };
+        this.cdr.markForCheck();
       },
       error: (err: Error) => {
         alert('Error loading site: ' + err.message);

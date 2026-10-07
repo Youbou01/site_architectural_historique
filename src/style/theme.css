@@ -1,37 +1,47 @@
 :root {
+  color-scheme: dark;
   --color-bg: #0f172a;
   --color-surface: #0b1220;
+  --color-surface-alt: #162032;
   --color-border: #1e293b;
+  --color-border-strong: #334155;
   --color-text: #e5e7eb;
   --color-muted: #94a3b8;
   --color-accent: #2563eb;
   --color-accent-alt: #0ea5e9;
   --color-accent-soft: #10243b;
-  --color-surface-alt: #162032;
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
   --color-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
 }
+
 :root[data-theme='light'] {
-  /* Warm, soft light theme (avoid pure white) */
-  --color-bg: #f5ede3; /* main page background */
-  --color-surface: #f9f2ea; /* primary surface card */
-  --color-surface-alt: #f2e6d8; /* alt surface sections */
-  --color-border: #e2d6c8; /* subtle warm border */
-  --color-text: #2f241c; /* high contrast warm-neutral text */
-  --color-muted: #7d6e60; /* subdued descriptive text */
-  --color-accent: #e96d3d; /* primary warm accent (burnt orange) */
-  --color-accent-alt: #ffb347; /* secondary accent (apricot) */
-  --color-accent-soft: #ffe6d1; /* soft background for accent elements */
-  --color-shadow: 0 6px 18px -6px rgba(233, 109, 61, 0.28), 0 2px 6px rgba(0, 0, 0, 0.08);
+  color-scheme: light;
+  --color-bg: #f5ede3;
+  --color-surface: #fffaf4;
+  --color-surface-alt: #f2e6d8;
+  --color-border: #e2d6c8;
+  --color-border-strong: #cfbfae;
+  --color-text: #2f241c;
+  --color-muted: #7d6e60;
+  --color-accent: #c8572b;
+  --color-accent-alt: #d9822b;
+  --color-accent-soft: #ffe6d1;
+  --color-danger: #c53b32;
+  --color-success: #16835f;
+  --color-warning: #a66a00;
+  --color-shadow: 0 8px 22px -8px rgba(89, 62, 35, 0.18), 0 2px 6px rgba(89, 62, 35, 0.08);
 }
+
 body {
   background: var(--color-bg);
   color: var(--color-text);
   transition: background 0.4s, color 0.4s;
 }
 
-/* Light mode decorative gradients only */
-:root[data-theme='light'] body {
-  background: radial-gradient(circle at 18% 24%, rgba(255, 179, 71, 0.25) 0%, transparent 60%),
-    radial-gradient(circle at 82% 70%, rgba(233, 109, 61, 0.18) 0%, transparent 65%),
-    var(--color-bg);
+html,
+body,
+app-root {
+  background-color: var(--color-bg);
 }

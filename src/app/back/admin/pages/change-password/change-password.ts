@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../../services/auth';
@@ -26,6 +26,8 @@ export class ChangePasswordComponent {
   showOldPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
+
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(private auth: Auth) {}
 
@@ -98,6 +100,7 @@ export class ChangePasswordComponent {
     this.auth.changePassword(user.id, this.oldPassword, this.newPassword).subscribe({
       next: () => {
         this.isLoading = false;
+        this.cdr.markForCheck();
         this.message = 'Password updated successfully!';
         this.messageType = 'success';
         this.oldPassword = '';
@@ -108,10 +111,12 @@ export class ChangePasswordComponent {
         setTimeout(() => {
           this.message = '';
           this.messageType = '';
+          this.cdr.markForCheck();
         }, 5000);
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.markForCheck();
         this.message = err.error?.message || err.message || 'Failed to update password';
         this.messageType = 'error';
       },
